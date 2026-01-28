@@ -1,36 +1,35 @@
-<nav class="sticky top-0 z-50 bg-[#f0f0f0] border-b-2 border-black">
-  <div class="container mx-auto px-4 h-16 md:h-20 flex justify-between items-center">
+<nav class="sticky top-0 z-[100] bg-[#f0f0f0] border-b-2 border-black">
+  <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
     
-    <a href="/" class="text-2xl md:text-4xl font-header border-2 border-black font-black uppercase tracking-tighter text-black bg-[#ccff00] hover:bg-black hover:text-[#ccff00] transition-colors px-2 py-1 transform -rotate-1 inline-block">
-  TANDANG SANGAR
-</a>
+    <a href="/" class="text-2xl md:text-3xl font-header border-2 border-black font-black uppercase tracking-tighter text-black bg-[#ccff00] hover:bg-black hover:text-[#ccff00] transition-all px-2 py-1 transform -rotate-1 inline-block shadow-[4px_4px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+         {{ global.site_title or "TANDANG SANGAR" }}
+    </a>
 
-    <div class="hidden md:flex items-center space-x-6">
-      <a href="/category/music" class="font-mono font-bold text-sm hover:bg-black hover:text-[#ccff00] px-2 py-1 transition-all">MUSIC</a>
-      <a href="/category/film" class="font-mono font-bold text-sm hover:bg-black hover:text-[#ccff00] px-2 py-1 transition-all">FILM</a>
-      <a href="/category/visual" class="font-mono font-bold text-sm hover:bg-black hover:text-[#ccff00] px-2 py-1 transition-all">VISUAL</a>
-      <a href="/about" class="font-mono font-bold text-sm hover:bg-black hover:text-[#ccff00] px-2 py-1 transition-all">ABOUT</a>
-      
-      <a href="/admin" class="p-2 hover:bg-[#ccff00] border-2 border-transparent hover:border-black transition-all">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </a>
-    </div>
+    <div class="flex flex-wrap justify-center gap-4 md:gap-8 font-mono font-bold text-sm md:text-base">
+        
+        <a href="/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
+            HOME
+        </a>
 
-    <button id="mobile-menu-btn" class="md:hidden p-2 border-2 border-black">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-    </button>
-  </div>
+        <a href="/category/music/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
+            MUSIC
+        </a>
+        <a href="/category/film/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
+            FILM
+        </a>
+        <a href="/category/visual/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
+            VISUAL
+        </a>
+        
+        <a href="/archive/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
+            ARCHIVE
+        </a>
+        
+        <a href="/about/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
+            ABOUT
+        </a>
 
-  <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-[#f0f0f0] border-b-2 border-black p-4 flex flex-col space-y-4 brutal-shadow z-50">
-    <a href="/category/music" class="font-header text-xl uppercase border-b-2 border-black pb-2 hover:text-[#ccff00] hover:bg-black px-2">MUSIC</a>
-    <a href="/category/film" class="font-header text-xl uppercase border-b-2 border-black pb-2 hover:text-[#ccff00] hover:bg-black px-2">FILM</a>
-    <a href="/about" class="font-header text-xl uppercase border-b-2 border-black pb-2 hover:text-[#ccff00] hover:bg-black px-2">ABOUT</a>
+        </div>
+
   </div>
 </nav>
-
-<script>
-  // Simple JS buat toggle menu HP
-  document.getElementById('mobile-menu-btn').addEventListener('click', function() {
-    document.getElementById('mobile-menu').classList.toggle('hidden');
-  });
-</script>

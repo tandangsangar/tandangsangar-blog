@@ -41,9 +41,8 @@ title: Home
         </h1>
     </div>
 
-    <div class="absolute z-50 w-full max-w-sm px-4 top-1/2 -translate-y-1/2 
-                left-1/2 -translate-x-1/2 
-                md:left-auto md:right-[15%] md:translate-x-0">
+    <div class="relative z-40 w-full max-w-sm px-4 mx-auto mt-32 
+                md:absolute md:mt-0 md:top-1/2 md:-translate-y-1/2 md:left-auto md:right-[15%]">
         
         <div class="bg-[#f0f0f0] p-6 border-2 border-black shadow-[8px_8px_0px_0px_#000] rotate-2 hover:rotate-0 transition-transform duration-300">
             <div class="flex items-center gap-2 mb-4 border-b-2 border-black pb-2">
@@ -55,7 +54,7 @@ title: Home
             <p class="font-mono text-sm leading-relaxed mb-6 uppercase text-black">
                 {{ global.manifesto_text }}
             </p>
-            <a href="#articles" class="group/btn block w-full border-2 border-black bg-white p-3 font-bold font-header uppercase text-lg hover:bg-black hover:text-[#ccff00] transition-colors flex justify-between items-center text-black">
+            <a href="{{ global.manifesto_link or '#articles' }}" class="group/btn block w-full border-2 border-black bg-white p-3 font-bold font-header uppercase text-lg hover:bg-black hover:text-[#ccff00] transition-colors flex justify-between items-center text-black">
                 {{ global.manifesto_btn }}
                 <span class="group-hover/btn:translate-x-1 transition-transform">&rarr;</span>
             </a>

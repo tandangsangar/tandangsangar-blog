@@ -82,11 +82,24 @@ collections:
               widget: "string",
             }
           - { label: "Manifesto Body", name: "manifesto_text", widget: "text" }
+          # ... (field manifesto title & body di atasnya tetep sama) ...
+
           - {
-              label: "Manifesto Button",
+              label: "Manifesto Button Text",
               name: "manifesto_btn",
               widget: "string",
+              default: "EXPLORE",
             }
+
+          # TAMBAHAN BARU 👇
+          - {
+              label: "Manifesto Button Link",
+              name: "manifesto_link",
+              widget: "string",
+              default: "#articles",
+            }
+
+          # ... (field marquee di bawahnya tetep sama) ...
           - { label: "Top Marquee Text", name: "marquee_top", widget: "string" }
           - {
               label: "Bottom Marquee Text",
