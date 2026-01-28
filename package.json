@@ -4,7 +4,7 @@
   "description": "Media Kolektif Pop-Culture - Brutalist Edition",
   "scripts": {
     "start": "concurrently \"npx tailwindcss -i ./src/css/input.css -o ./src/css/styles.css --watch\" \"eleventy --serve\"",
-    "build": "npx tailwindcss -i ./src/css/input.css -o ./src/css/styles.css --minify && npx eleventy"
+    "build": "npx tailwindcss -i ./src/css/styles.css -o ./_site/css/styles.css --minify && npx eleventy"
   },
   "keywords": [],
   "author": "Tandang Sangar",
