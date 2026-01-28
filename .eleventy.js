@@ -3,6 +3,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/admin");
   eleventyConfig.addPassthroughCopy("src/_includes/assets");
   eleventyConfig.addPassthroughCopy("src/uploads");
+  eleventyConfig.addPassthroughCopy("src/favicon.png");
 
   // 1. Format Tanggal (biar gak error)
   eleventyConfig.addFilter("date", function (dateVal) {
