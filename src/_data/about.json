@@ -4,18 +4,30 @@
   "intro": "TANDANG SANGAR IS A DIGITAL COLLECTIVE DEDICATED TO THE RAW, THE UNPOLISHED, AND THE LOUD.\n\nFounded in 2026, we operate from the shadows of Surakarta. We believe that culture is not created in boardrooms, but in basements, street corners, and makeshift studios.",
   "manifesto_title": "OUR MANIFESTO",
   "manifesto_list": [
-    { "num": "01", "text": "NO FILTERS. Reality is grainy." },
-    { "num": "02", "text": "NO INFLUENCERS. Real people only." },
-    { "num": "03", "text": "NO COMPROMISE. Loud or nothing." },
-    { "num": "04", "text": "ALWAYS LOCAL. Support your scene." }
+    {
+      "num": "01",
+      "text": "NO FILTERS. Reality is grainy."
+    },
+    {
+      "num": "02",
+      "text": "NO INFLUENCERS. Real people only."
+    },
+    {
+      "num": "03",
+      "text": "NO COMPROMISE. Loud or nothing."
+    },
+    {
+      "num": "04",
+      "text": "ALWAYS LOCAL. Support your scene."
+    }
   ],
   "team_title": "THE TEAM",
   "team": [
     {
-      "name": "RIZKY 'HAMMER'",
-      "role": "EDITOR IN CHIEF",
-      "desc": "Vinyl addict and noise connoisseur. Menulis untuk hidup, hidup untuk gigs.",
-      "photo": "https://placehold.co/400x400/1a1a1a/ccff00?text=HAMMER"
+      "name": "KDM",
+      "role": "GUBERNUR JABAR",
+      "desc": "KDM Bapak aing, aing bapak saha?",
+      "photo": "/uploads/gemini_generated_image_efyqd1efyqd1efyq-1-.png"
     },
     {
       "name": "SARASVATI",
