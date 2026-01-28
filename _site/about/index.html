@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Tandang Sangar</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Oswald:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body class="bg-[#f0f0f0] font-mono text-black antialiased selection:bg-[#ccff00] selection:text-black flex flex-col min-h-screen">
+
+    <nav class="sticky top-0 z-50 bg-[#f0f0f0] border-b-2 border-black">
+  <div class="container mx-auto px-4 h-16 md:h-20 flex justify-between items-center">
+    
+    <a href="/" class="text-2xl md:text-4xl font-header border-2 border-black font-black uppercase tracking-tighter text-black bg-[#ccff00] hover:bg-black hover:text-[#ccff00] transition-colors px-2 py-1 transform -rotate-1 inline-block">
+  TANDANG SANGAR
+</a>
+
+    <div class="hidden md:flex items-center space-x-6">
+      <a href="/category/music" class="font-mono font-bold text-sm hover:bg-black hover:text-[#ccff00] px-2 py-1 transition-all">MUSIC</a>
+      <a href="/category/film" class="font-mono font-bold text-sm hover:bg-black hover:text-[#ccff00] px-2 py-1 transition-all">FILM</a>
+      <a href="/category/visual" class="font-mono font-bold text-sm hover:bg-black hover:text-[#ccff00] px-2 py-1 transition-all">VISUAL</a>
+      <a href="/about" class="font-mono font-bold text-sm hover:bg-black hover:text-[#ccff00] px-2 py-1 transition-all">ABOUT</a>
+      
+      <a href="/admin" class="p-2 hover:bg-[#ccff00] border-2 border-transparent hover:border-black transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>
+    </div>
+
+    <button id="mobile-menu-btn" class="md:hidden p-2 border-2 border-black">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-[#f0f0f0] border-b-2 border-black p-4 flex flex-col space-y-4 brutal-shadow z-50">
+    <a href="/category/music" class="font-header text-xl uppercase border-b-2 border-black pb-2 hover:text-[#ccff00] hover:bg-black px-2">MUSIC</a>
+    <a href="/category/film" class="font-header text-xl uppercase border-b-2 border-black pb-2 hover:text-[#ccff00] hover:bg-black px-2">FILM</a>
+    <a href="/about" class="font-header text-xl uppercase border-b-2 border-black pb-2 hover:text-[#ccff00] hover:bg-black px-2">ABOUT</a>
+  </div>
+</nav>
+
+<script>
+  // Simple JS buat toggle menu HP
+  document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+    document.getElementById('mobile-menu').classList.toggle('hidden');
+  });
+</script>
+
+    <main class="flex-grow">
+        
+<div class="container mx-auto px-4 py-12 md:py-24">
+    <div class="max-w-6xl mx-auto">
+        
+        <h1 class="text-6xl md:text-9xl font-header uppercase leading-none mb-12 border-b-8 border-black pb-4">
+            ABOUT <br/>
+            <span class="text-[#ccff00] bg-black px-4 inline-block transform -rotate-2 border-2 border-[#ccff00]">US</span>
+        </h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+            
+            <div class="font-mono text-lg leading-relaxed flex flex-col justify-center">
+                <p class="mb-6 font-bold text-xl border-l-4 border-[#ccff00] pl-4">
+                    TANDANG SANGAR IS A DIGITAL COLLECTIVE DEDICATED TO THE RAW, THE UNPOLISHED, AND THE LOUD.
+                </p>
+                <p class="mb-6">
+                    Founded in 2026, we operate from the shadows of Surakarta. We believe that culture is not created in boardrooms, but in basements, street corners, and makeshift studios.
+                </p>
+                <p>
+                    We are anti-algorithm. We curate based on gut feeling, not engagement metrics. If it's real, we document it.
+                </p>
+            </div>
+
+            <div class="border-2 border-black p-8 bg-[#ccff00] brutal-shadow flex flex-col justify-center transform rotate-1 hover:rotate-0 transition-transform duration-300">
+                <div class="flex items-center gap-2 mb-4 border-b-2 border-black pb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="black"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <h2 class="font-header text-4xl uppercase">OUR MANIFESTO</h2>
+                </div>
+                <ul class="list-none font-mono space-y-3 font-bold">
+                    <li class="flex items-center gap-2">
+                        <span class="bg-black text-white px-2 text-sm">01</span> NO FILTERS. Reality is grainy.
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="bg-black text-white px-2 text-sm">02</span> NO INFLUENCERS. Real people only.
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="bg-black text-white px-2 text-sm">03</span> NO COMPROMISE. Loud or nothing.
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="bg-black text-white px-2 text-sm">04</span> ALWAYS LOCAL. Support your scene.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t-4 border-black pt-12">
+             <h2 class="font-header text-5xl uppercase mb-8 flex items-center gap-4">
+                THE TEAM <span class="text-sm font-mono bg-black text-white px-2 py-1 align-middle">CORE MEMBERS</span>
+             </h2>
+             
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                 
+                 <div class="border-2 border-black p-6 hover:bg-black hover:text-[#ccff00] transition-colors group brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none bg-white">
+                     <h3 class="font-header text-3xl uppercase mb-2 group-hover:text-white">RIZKY 'HAMMER'</h3>
+                     <div class="font-mono text-xs font-bold bg-[#ccff00] text-black inline-block px-2 mb-4 border border-black group-hover:border-white">
+                         EDITOR IN CHIEF
+                     </div>
+                     <p class="font-mono text-sm group-hover:text-gray-300">Vinyl addict and noise connoisseur. Menulis untuk hidup, hidup untuk gigs.</p>
+                 </div>
+
+                 <div class="border-2 border-black p-6 hover:bg-black hover:text-[#ccff00] transition-colors group brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none bg-white">
+                     <h3 class="font-header text-3xl uppercase mb-2 group-hover:text-white">SARASVATI</h3>
+                     <div class="font-mono text-xs font-bold bg-[#ccff00] text-black inline-block px-2 mb-4 border border-black group-hover:border-white">
+                         VISUAL DIRECTOR
+                     </div>
+                     <p class="font-mono text-sm group-hover:text-gray-300">Shoots exclusively on expired film. Menangkap momen sebelum hilang ditelan jaman.</p>
+                 </div>
+
+                 <div class="border-2 border-black p-6 hover:bg-black hover:text-[#ccff00] transition-colors group brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none bg-white">
+                     <h3 class="font-header text-3xl uppercase mb-2 group-hover:text-white">AI_ARCHITECT</h3>
+                     <div class="font-mono text-xs font-bold bg-[#ccff00] text-black inline-block px-2 mb-4 border border-black group-hover:border-white">
+                         HEAD OF TECH
+                     </div>
+                     <p class="font-mono text-sm group-hover:text-gray-300">Living in the terminal. Memastikan website ini tetap brutal dan on-air.</p>
+                 </div>
+
+             </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="h-24 md:h-32"></div>
+    </main>
+
+    <footer class="border-t-0 border-black bg-black text-white">
+  <div class="container mx-auto px-4 py-12 md:py-20">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div class="col-span-1 md:col-span-4 border-b border-[#333] pb-12 mb-8">
+        <h2 class="text-7xl md:text-9xl font-header font-black uppercase text-[#ccff00] leading-[0.8] tracking-tighter break-all">
+          TANDANG<br>SANGAR
+        </h2>
+      </div>
+      
+      <div class="col-span-1 md:col-span-2">
+        <p class="font-mono text-sm md:text-base max-w-md text-gray-400">
+          A collective of noise makers, visual agitators, and taste testers. We document the culture others ignore.
+          <br/><br/>
+          EST. 2026 /// SURAKARTA
+        </p>
+      </div>
+      
+      <div>
+        <h3 class="font-header text-xl mb-4 text-white">SECTIONS</h3>
+        <ul class="space-y-2 font-mono text-sm text-gray-400">
+          <li><a href="/category/music" class="hover:text-[#ccff00] hover:underline">/// MUSIC</a></li>
+          <li><a href="/category/film" class="hover:text-[#ccff00] hover:underline">/// FILM</a></li>
+          <li><a href="/category/visual" class="hover:text-[#ccff00] hover:underline">/// VISUAL</a></li>
+        </ul>
+      </div>
+      
+      <div>
+        <h3 class="font-header text-xl mb-4 text-white">CONNECT</h3>
+        <ul class="space-y-2 font-mono text-sm text-gray-400">
+          <li><a href="#" class="hover:text-[#ccff00]">INSTAGRAM</a></li>
+          <li><a href="#" class="hover:text-[#ccff00]">TWITTER (X)</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="mt-12 pt-8 border-t border-[#333] flex flex-col md:flex-row justify-between items-center font-mono text-xs text-gray-600">
+      <p>&copy; 2026 TANDANG SANGAR MEDIA.</p>
+      <p>BUILT ON 11TY</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Brutalist Utilities */
+@layer components {
+  .btn-brutal {
+    @apply border-2 border-black bg-white px-4 py-2 font-bold hover:bg-acid-green transition-colors duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)];
+  }
+}
+/* ... kode tailwind sebelumnya ... */
+
+@layer utilities {
+  .font-header {
+    font-family: "Oswald", sans-serif;
+  }
+  .font-mono {
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  /* Pengganti Framer Motion Marquee */
+  .animate-marquee {
+    animation: marquee 25s linear infinite;
+  }
+  .animate-marquee-reverse {
+    animation: marquee 25s linear infinite reverse;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* Brutal Shadow Utility */
+  .brutal-shadow {
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  }
+  .brutal-shadow-lg {
+    box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+  }
+}
