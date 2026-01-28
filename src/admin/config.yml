@@ -93,3 +93,62 @@ collections:
               name: "marquee_bottom",
               widget: "string",
             }
+      # --- SETTING ABOUT PAGE ---
+      - name: "about"
+        label: "About Page"
+        file: "src/_data/about.json"
+        fields:
+          # BAGIAN JUDUL BESAR
+          - {
+              label: "Title Line 1 (Normal)",
+              name: "title_top",
+              widget: "string",
+              default: "ABOUT",
+            }
+          - {
+              label: "Title Line 2 (Highlighted)",
+              name: "title_bottom",
+              widget: "string",
+              default: "US",
+            }
+
+          # BAGIAN INTRO (TEKS KIRI)
+          - { label: "Intro Text", name: "intro", widget: "markdown" }
+
+          # BAGIAN MANIFESTO (BOX KUNING KANAN)
+          - label: "Manifesto Title"
+            name: "manifesto_title"
+            widget: "string"
+            default: "OUR MANIFESTO"
+
+          - label: "Manifesto Points"
+            name: "manifesto_list"
+            widget: "list"
+            fields:
+              - {
+                  label: "Number/Label",
+                  name: "num",
+                  widget: "string",
+                  default: "01",
+                }
+              - {
+                  label: "Content",
+                  name: "text",
+                  widget: "string",
+                  default: "NO FILTERS.",
+                }
+
+          # BAGIAN TEAM (BAWAH)
+          - label: "Team Section Title"
+            name: "team_title"
+            widget: "string"
+            default: "THE TEAM"
+
+          - label: "Team Members"
+            name: "team"
+            widget: "list"
+            fields:
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Role/Jabatan", name: "role", widget: "string" }
+              - { label: "Description", name: "desc", widget: "text" }
+              - { label: "Photo", name: "photo", widget: "image" } # Ini field foto barunya

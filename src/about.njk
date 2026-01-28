@@ -7,81 +7,38 @@ title: About Us
     <div class="max-w-6xl mx-auto">
         
         <h1 class="text-6xl md:text-9xl font-header uppercase leading-none mb-12 border-b-8 border-black pb-4">
-            ABOUT <br/>
-            <span class="text-[#ccff00] bg-black px-4 inline-block transform -rotate-2 border-2 border-[#ccff00]">US</span>
+            {{ about.title_top }} <br/>
+            <span class="text-[#ccff00] bg-black px-4 inline-block transform -rotate-2 border-2 border-[#ccff00]">
+                {{ about.title_bottom }}
+            </span>
         </h1>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
             
-            <div class="font-mono text-lg leading-relaxed flex flex-col justify-center">
-                <p class="mb-6 font-bold text-xl border-l-4 border-[#ccff00] pl-4">
-                    TANDANG SANGAR IS A DIGITAL COLLECTIVE DEDICATED TO THE RAW, THE UNPOLISHED, AND THE LOUD.
-                </p>
-                <p class="mb-6">
-                    Founded in 2026, we operate from the shadows of Surakarta. We believe that culture is not created in boardrooms, but in basements, street corners, and makeshift studios.
-                </p>
-                <p>
-                    We are anti-algorithm. We curate based on gut feeling, not engagement metrics. If it's real, we document it.
-                </p>
+            <div class="font-mono text-lg leading-relaxed flex flex-col justify-center prose prose-p:mb-4 prose-strong:font-bold prose-strong:text-xl prose-strong:border-l-4 prose-strong:border-[#ccff00] prose-strong:pl-4 prose-strong:block">
+                {{ about.intro | safe }}
             </div>
 
             <div class="border-2 border-black p-8 bg-[#ccff00] brutal-shadow flex flex-col justify-center transform rotate-1 hover:rotate-0 transition-transform duration-300">
                 <div class="flex items-center gap-2 mb-4 border-b-2 border-black pb-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="black"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    <h2 class="font-header text-4xl uppercase">OUR MANIFESTO</h2>
+                    <h2 class="font-header text-4xl uppercase">{{ about.manifesto_title }}</h2>
                 </div>
+                
                 <ul class="list-none font-mono space-y-3 font-bold">
-                    <li class="flex items-center gap-2">
-                        <span class="bg-black text-white px-2 text-sm">01</span> NO FILTERS. Reality is grainy.
+                    {% for item in about.manifesto_list %}
+                    <li class="flex items-start gap-3">
+                        <span class="bg-black text-white px-2 text-sm mt-1 shrink-0">{{ item.num }}</span> 
+                        <span class="uppercase">{{ item.text }}</span>
                     </li>
-                    <li class="flex items-center gap-2">
-                        <span class="bg-black text-white px-2 text-sm">02</span> NO INFLUENCERS. Real people only.
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="bg-black text-white px-2 text-sm">03</span> NO COMPROMISE. Loud or nothing.
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span class="bg-black text-white px-2 text-sm">04</span> ALWAYS LOCAL. Support your scene.
-                    </li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
 
         <div class="border-t-4 border-black pt-12">
              <h2 class="font-header text-5xl uppercase mb-8 flex items-center gap-4">
-                THE TEAM <span class="text-sm font-mono bg-black text-white px-2 py-1 align-middle">CORE MEMBERS</span>
+                {{ about.team_title }} <span class="text-sm font-mono bg-black text-white px-2 py-1 align-middle">CORE MEMBERS</span>
              </h2>
              
-             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                 
-                 <div class="border-2 border-black p-6 hover:bg-black hover:text-[#ccff00] transition-colors group brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none bg-white">
-                     <h3 class="font-header text-3xl uppercase mb-2 group-hover:text-white">RIZKY 'HAMMER'</h3>
-                     <div class="font-mono text-xs font-bold bg-[#ccff00] text-black inline-block px-2 mb-4 border border-black group-hover:border-white">
-                         EDITOR IN CHIEF
-                     </div>
-                     <p class="font-mono text-sm group-hover:text-gray-300">Vinyl addict and noise connoisseur. Menulis untuk hidup, hidup untuk gigs.</p>
-                 </div>
-
-                 <div class="border-2 border-black p-6 hover:bg-black hover:text-[#ccff00] transition-colors group brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none bg-white">
-                     <h3 class="font-header text-3xl uppercase mb-2 group-hover:text-white">SARASVATI</h3>
-                     <div class="font-mono text-xs font-bold bg-[#ccff00] text-black inline-block px-2 mb-4 border border-black group-hover:border-white">
-                         VISUAL DIRECTOR
-                     </div>
-                     <p class="font-mono text-sm group-hover:text-gray-300">Shoots exclusively on expired film. Menangkap momen sebelum hilang ditelan jaman.</p>
-                 </div>
-
-                 <div class="border-2 border-black p-6 hover:bg-black hover:text-[#ccff00] transition-colors group brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none bg-white">
-                     <h3 class="font-header text-3xl uppercase mb-2 group-hover:text-white">AI_ARCHITECT</h3>
-                     <div class="font-mono text-xs font-bold bg-[#ccff00] text-black inline-block px-2 mb-4 border border-black group-hover:border-white">
-                         HEAD OF TECH
-                     </div>
-                     <p class="font-mono text-sm group-hover:text-gray-300">Living in the terminal. Memastikan website ini tetap brutal dan on-air.</p>
-                 </div>
-
-             </div>
-        </div>
-
-    </div>
-</div>
-
-<div class="h-24 md:h-32"></div>
+             <div class="grid grid-cols-1 md:grid
