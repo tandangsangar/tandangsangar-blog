@@ -3,12 +3,8 @@
   "version": "1.0.0",
   "description": "Media Kolektif Pop-Culture - Brutalist Edition",
   "scripts": {
-    "start": "npm-run-all --parallel dev:*",
-    "dev:eleventy": "eleventy --serve",
-    "dev:tailwind": "tailwindcss -i ./src/_includes/css/styles.css -o ./_site/css/styles.css --watch",
-    "build": "npm-run-all build:*",
-    "build:tailwind": "tailwindcss -i ./src/_includes/css/styles.css -o ./_site/css/styles.css --minify",
-    "build:eleventy": "eleventy"
+    "start": "concurrently \"npx tailwindcss -i ./src/css/input.css -o ./src/css/styles.css --watch\" \"eleventy --serve\"",
+    "build": "npx tailwindcss -i ./src/css/input.css -o ./src/css/styles.css --minify && npx eleventy"
   },
   "keywords": [],
   "author": "Tandang Sangar",
