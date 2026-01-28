@@ -41,6 +41,7 @@ collections:
       - { label: "Body Content", name: "body", widget: "markdown" }
 
   # 2. KOLEKSI PENGATURAN (Baru)
+  # 2. KOLEKSI PENGATURAN (Baru)
   - name: "settings"
     label: "Site Settings"
     delete: false
@@ -50,41 +51,37 @@ collections:
       - name: "global"
         label: "Global Settings (Hero & Marquee)"
         file: "src/_data/global.json"
-        fields:
-          fields:
-            - {
-                label: "Site Name / Logo",
-                name: "site_title",
-                widget: "string",
-              }
-            - { label: "Hero Headline", name: "hero_headline", widget: "text" }
-            - { label: "Hero Sub-text", name: "hero_sub", widget: "string" }
+        fields: # <--- Cukup satu aja fields-nya, langsung list di bawah
+          - { label: "Site Name / Logo", name: "site_title", widget: "string" }
+          - {
+              label: "Hero Text 1 (Solid - Kiri Atas)",
+              name: "hero_text_solid",
+              widget: "string",
+            }
+          - {
+              label: "Hero Text 2 (Outline - Kanan Bawah)",
+              name: "hero_text_outline",
+              widget: "string",
+            }
+          - { label: "Hero Sub-text", name: "hero_sub", widget: "string" }
 
-            # --- TAMBAHAN MANIFESTO ---
-            - {
-                label: "Manifesto Title",
-                name: "manifesto_title",
-                widget: "string",
-              }
-            - {
-                label: "Manifesto Body",
-                name: "manifesto_text",
-                widget: "text",
-              }
-            - {
-                label: "Manifesto Button",
-                name: "manifesto_btn",
-                widget: "string",
-              }
-            # --------------------------
+          # --- TAMBAHAN MANIFESTO ---
+          - {
+              label: "Manifesto Title",
+              name: "manifesto_title",
+              widget: "string",
+            }
+          - { label: "Manifesto Body", name: "manifesto_text", widget: "text" }
+          - {
+              label: "Manifesto Button",
+              name: "manifesto_btn",
+              widget: "string",
+            }
+          # --------------------------
 
-            - {
-                label: "Top Marquee Text",
-                name: "marquee_top",
-                widget: "string",
-              }
-            - {
-                label: "Bottom Marquee Text",
-                name: "marquee_bottom",
-                widget: "string",
-              }
+          - { label: "Top Marquee Text", name: "marquee_top", widget: "string" }
+          - {
+              label: "Bottom Marquee Text",
+              name: "marquee_bottom",
+              widget: "string",
+            }
