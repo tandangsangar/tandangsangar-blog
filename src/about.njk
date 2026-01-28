@@ -15,7 +15,14 @@ title: About Us
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
             
-            <div class="font-mono text-lg leading-relaxed flex flex-col justify-center prose prose-p:mb-4 prose-strong:font-bold prose-strong:text-xl prose-strong:border-l-4 prose-strong:border-[#ccff00] prose-strong:pl-4 prose-strong:block">
+            <div class="font-mono text-lg leading-relaxed flex flex-col justify-center prose max-w-none 
+                        [&>p]:mb-6 
+                        [&>p:first-child]:font-bold 
+                        [&>p:first-child]:text-xl 
+                        [&>p:first-child]:border-l-4 
+                        [&>p:first-child]:border-[#ccff00] 
+                        [&>p:first-child]:pl-4 
+                        [&>p:first-child]:uppercase">
                 {{ about.intro | safe }}
             </div>
 
@@ -41,4 +48,35 @@ title: About Us
                 {{ about.team_title }} <span class="text-sm font-mono bg-black text-white px-2 py-1 align-middle">CORE MEMBERS</span>
              </h2>
              
-             <div class="grid grid-cols-1 md:grid
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                 
+                 {% for member in about.team %}
+                 <div class="border-2 border-black p-6 hover:bg-black hover:text-[#ccff00] transition-colors group brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none bg-white flex flex-col h-full">
+                     
+                     <div class="aspect-square w-full border-2 border-black mb-6 overflow-hidden bg-gray-200">
+                        <img src="{{ member.photo or 'https://placehold.co/400x400/1a1a1a/ccff00?text=NO+IMG' }}" 
+                             alt="{{ member.name }}" 
+                             class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300">
+                     </div>
+
+                     <h3 class="font-header text-3xl uppercase mb-2 group-hover:text-white">{{ member.name }}</h3>
+                     
+                     <div>
+                        <div class="font-mono text-xs font-bold bg-[#ccff00] text-black inline-block px-2 mb-4 border border-black group-hover:border-white">
+                            {{ member.role }}
+                        </div>
+                     </div>
+                     
+                     <p class="font-mono text-sm group-hover:text-gray-300 mt-auto">
+                        {{ member.desc }}
+                     </p>
+                 </div>
+                 {% endfor %}
+
+             </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="h-24 md:h-32"></div>
