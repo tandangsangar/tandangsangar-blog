@@ -2,6 +2,16 @@
 layout: layouts/base.njk
 ---
 
+<style>
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+</style>
+
 <article class="min-h-screen border-b-2 border-black bg-white font-mono">
     
     <div class="flex flex-col md:flex-row">
@@ -108,14 +118,15 @@ layout: layouts/base.njk
 </article>
 
 <section class="border-b-2 border-black bg-[#f0f0f0] py-12 overflow-hidden">
-    <div class="container mx-auto px-4 mb-8 flex justify-between items-end">
-        <h2 class="font-header text-4xl md:text-6xl uppercase leading-none">
-            RELATED <br/><span class="text-[#ccff00] bg-black px-2">DATA_LOGS</span>
+    <div class="container mx-auto px-4 mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
+        <h2 class="font-header text-4xl md:text-6xl uppercase leading-tight md:leading-none">
+            RELATED <br class="md:hidden"/>
+            <span class="text-[#ccff00] bg-black px-2 inline-block transform -rotate-1 mt-1 md:mt-0">DATA_LOGS</span>
         </h2>
         <span class="font-mono text-xs hidden md:block animate-pulse">/// SCROLL HORIZONTALLY >>></span>
     </div>
     
-    <div class="flex overflow-x-auto gap-6 px-4 pb-8 snap-x snap-mandatory scrollbar-hide">
+    <div class="flex overflow-x-auto overflow-y-hidden gap-6 px-4 pb-8 snap-x snap-mandatory scrollbar-hide">
         
         {% set relatedPosts = collections.posts | filterByCategory(category) %}
         {% set count = 0 %}
@@ -134,14 +145,13 @@ layout: layouts/base.njk
                     
                     <div class="p-6 h-full flex flex-col justify-between">
                         <div>
-                            <span class="text-xs font-mono border border-black px-1 mb-2 inline-block text-gray-500 group-hover:bg-black group-hover:text-white transition-colors">{{ post.data.category }}</span>
-                            <h3 class="font-header text-2xl uppercase leading-[0.9] group-hover:underline decoration-4 underline-offset-4 decoration-[#ccff00] mb-4">
+                            <span class="text-xs font-mono border border-black px-1 mb-2 inline-block text-gray-500 group-hover:bg-black group-hover:text-white transition-colors">
+                                {{ post.data.category }}
+                            </span>
+                            <h3 class="font-header text-2xl uppercase leading-[0.9] group-hover:underline decoration-4 underline-offset-4 decoration-[#ccff00]">
                                 {{ post.data.title }}
                             </h3>
                         </div>
-                        <p class="font-mono text-xs text-gray-500 line-clamp-2 border-l-2 border-gray-300 pl-2">
-                            {{ post.data.excerpt }}
-                        </p>
                     </div>
                 </a>
 
