@@ -61,19 +61,15 @@ layout: layouts/base.njk
             </div>
         </aside>
 
-
         <div class="w-full md:w-8/12 bg-white">
     
-    <div class="w-full aspect-video border-b-2 border-black overflow-hidden relative">
-        <img src="{{ image }}" alt="{{ title }}" class="w-full h-full object-cover">
-        
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')] opacity-20 pointer-events-none"></div>
-    </div>
+            <div class="w-full aspect-video border-b-2 border-black overflow-hidden relative">
+                <img src="{{ image }}" alt="{{ title }}" class="w-full h-full object-cover">
+                
+                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiIG9wYWNpdHk9IjAuMSIvPgo8L3N2Zz4=')] opacity-20 pointer-events-none"></div>
+            </div>
 
-    <div class="p-6 md:p-16 lg:p-20 min-h-[50vh]">
-        ```
-
-Dengan menghapus `group`, gambar ini sekarang benar-benar statis ("mati") dan tidak akan merespon kursor mouse sama sekali, sesuai request biar beda sama elemen interaktif lainnya. Sisanya aman tidak ada yang disentuh.
+            <div class="p-6 md:p-16 lg:p-20 min-h-[50vh]">
                 
                 <p class="text-xl md:text-2xl font-serif italic leading-relaxed mb-12 border-l-4 border-[#ccff00] pl-6 py-2 text-gray-800">
                     {{ excerpt }}
