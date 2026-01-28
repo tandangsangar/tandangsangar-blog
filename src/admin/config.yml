@@ -1,15 +1,13 @@
 backend:
   name: git-gateway
   branch: main
-  # Ini biar bisa jalan di localhost tanpa deploy dulu
   local_backend: true
 
-# Folder tempat nyimpen gambar yang diupload
 media_folder: "src/uploads"
 public_folder: "/uploads"
 
-# Setting Koleksi Konten
 collections:
+  # 1. KOLEKSI ARTIKEL
   - name: "posts"
     label: "Articles"
     folder: "src/posts"
@@ -22,7 +20,8 @@ collections:
           widget: "hidden",
           default: "layouts/post.njk",
         }
-      - { label: "Tags", name: "tags", widget: "hidden", default: "posts" }
+      # Tags diganti jadi 'list' biar bisa input banyak
+      - { label: "Tags", name: "tags", widget: "list", default: ["posts"] }
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Publish Date", name: "date", widget: "datetime" }
       - {
@@ -40,3 +39,52 @@ collections:
       - { label: "Cover Image", name: "image", widget: "image" }
       - { label: "Excerpt (Intro)", name: "excerpt", widget: "text" }
       - { label: "Body Content", name: "body", widget: "markdown" }
+
+  # 2. KOLEKSI PENGATURAN (Baru)
+  - name: "settings"
+    label: "Site Settings"
+    delete: false
+    editor:
+      preview: false
+    files:
+      - name: "global"
+        label: "Global Settings (Hero & Marquee)"
+        file: "src/_data/global.json"
+        fields:
+          fields:
+            - {
+                label: "Site Name / Logo",
+                name: "site_title",
+                widget: "string",
+              }
+            - { label: "Hero Headline", name: "hero_headline", widget: "text" }
+            - { label: "Hero Sub-text", name: "hero_sub", widget: "string" }
+
+            # --- TAMBAHAN MANIFESTO ---
+            - {
+                label: "Manifesto Title",
+                name: "manifesto_title",
+                widget: "string",
+              }
+            - {
+                label: "Manifesto Body",
+                name: "manifesto_text",
+                widget: "text",
+              }
+            - {
+                label: "Manifesto Button",
+                name: "manifesto_btn",
+                widget: "string",
+              }
+            # --------------------------
+
+            - {
+                label: "Top Marquee Text",
+                name: "marquee_top",
+                widget: "string",
+              }
+            - {
+                label: "Bottom Marquee Text",
+                name: "marquee_bottom",
+                widget: "string",
+              }

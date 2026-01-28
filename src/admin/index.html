@@ -8,5 +8,94 @@
   </head>
   <body>
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+    <script>
+      // 1. Ambil CSS Website
+      CMS.registerPreviewStyle("/css/styles.css");
+
+      // 2. Bikin Layout Preview (Split Layout Style)
+      var PostPreview = createClass({
+        render: function () {
+          var entry = this.props.entry;
+          var image = entry.getIn(["data", "image"]);
+          var title = entry.getIn(["data", "title"]);
+          var category = entry.getIn(["data", "category"]);
+          var author = entry.getIn(["data", "author"]);
+          var body = this.props.widgetFor("body");
+
+          return h(
+            "div",
+            {
+              className:
+                "min-h-screen bg-white font-mono border-b-2 border-black",
+            },
+            h(
+              "div",
+              { className: "flex flex-col md:flex-row" },
+              // KIRI
+              h(
+                "aside",
+                {
+                  className:
+                    "w-full md:w-4/12 border-b-2 md:border-b-0 md:border-r-2 border-black bg-[#f0f0f0] p-8 md:h-screen md:sticky md:top-0",
+                },
+                h(
+                  "span",
+                  {
+                    className:
+                      "bg-black text-[#ccff00] px-2 py-1 text-xs font-bold uppercase mb-4 inline-block",
+                  },
+                  category,
+                ),
+                h(
+                  "h1",
+                  {
+                    className:
+                      "font-header text-5xl md:text-6xl uppercase leading-[0.85] tracking-tight break-words mb-8",
+                  },
+                  title,
+                ),
+                h(
+                  "div",
+                  { className: "mt-8 border-t-2 border-black pt-4" },
+                  h(
+                    "p",
+                    { className: "text-xs font-bold uppercase" },
+                    "By " + author,
+                  ),
+                ),
+              ),
+              // KANAN
+              h(
+                "div",
+                { className: "w-full md:w-8/12 bg-white" },
+                h(
+                  "div",
+                  {
+                    className:
+                      "w-full aspect-video border-b-2 border-black overflow-hidden relative",
+                  },
+                  h("img", {
+                    src: image,
+                    className:
+                      "w-full h-full object-cover grayscale contrast-125",
+                  }),
+                ),
+                h(
+                  "div",
+                  {
+                    className:
+                      "p-8 md:p-16 prose prose-lg max-w-none prose-headings:font-header prose-headings:uppercase prose-p:font-serif",
+                  },
+                  body,
+                ),
+              ),
+            ),
+          );
+        },
+      });
+
+      CMS.registerPreviewTemplate("posts", PostPreview);
+    </script>
   </body>
 </html>
