@@ -42,6 +42,7 @@ collections:
 
   # 2. KOLEKSI PENGATURAN (Baru)
   # 2. KOLEKSI PENGATURAN (Baru)
+  # 2. KOLEKSI PENGATURAN
   - name: "settings"
     label: "Site Settings"
     delete: false
@@ -49,23 +50,32 @@ collections:
       preview: false
     files:
       - name: "global"
-        label: "Global Settings (Hero & Marquee)"
+        label: "Global Settings"
         file: "src/_data/global.json"
-        fields: # <--- Cukup satu aja fields-nya, langsung list di bawah
+        fields:
+          # --- GAMBAR HERO ---
+          - {
+              label: "Hero Background Image",
+              name: "hero_image",
+              widget: "image",
+              required: false,
+            }
+          # -------------------
+
           - { label: "Site Name / Logo", name: "site_title", widget: "string" }
           - {
-              label: "Hero Text 1 (Solid - Kiri Atas)",
+              label: "Hero Text 1 (Solid)",
               name: "hero_text_solid",
               widget: "string",
             }
           - {
-              label: "Hero Text 2 (Outline - Kanan Bawah)",
+              label: "Hero Text 2 (Outline)",
               name: "hero_text_outline",
               widget: "string",
             }
           - { label: "Hero Sub-text", name: "hero_sub", widget: "string" }
 
-          # --- TAMBAHAN MANIFESTO ---
+          # (Manifesto & Marquee tetap sama seperti sebelumnya...)
           - {
               label: "Manifesto Title",
               name: "manifesto_title",
@@ -77,8 +87,6 @@ collections:
               name: "manifesto_btn",
               widget: "string",
             }
-          # --------------------------
-
           - { label: "Top Marquee Text", name: "marquee_top", widget: "string" }
           - {
               label: "Bottom Marquee Text",
