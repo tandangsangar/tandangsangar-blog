@@ -1,0 +1,29 @@
+{
+  "site_title": "TANDANG SANGAR",
+  "marquee_bottom": "WEDHARAN SANGAR   ⚡   OTOP-SCENE  ⚡   HURU-HARA POP  ⚡    NOKJURNAL HIPSTER  ⚡",
+  "manifesto_text": "MARI BERSAMA MENYAMBUT BULAN RAMADHAN DENGAN TANDANG SYARI'AH",
+  "hero_text_outline": "SANGAR",
+  "hero_image": "/uploads/win_20260201_19_32_06_pro.jpg",
+  "marquee_top": "NOKJURNAL HIPSTER   ⚡   WEDHARAN SANGAR   ⚡   OTOP-SCENE   ⚡   HURU-HARA POP  ⚡",
+  "manifesto_link": "https://www.instagram.com/tandangsangar/",
+  "manifesto_title": "SEKILAS INFO!",
+  "hero_sub": "MEDIA ALTERNATIF /// NOISE /// VISUAL /// CULTURE",
+  "manifesto_btn": "TONTON SEKARANG",
+  "hero_text_solid": "TANDANG",
+  "newsletter_post_title": "KEEP IT LOUD",
+  "newsletter_post_placeholder": "YOUR@EMAIL.COM",
+  "newsletter_post_btn": "SUBMIT",
+  "newsletter_post_url": "#",
+  "newsletter_home_bg": "SUBSCRIBE",
+  "newsletter_home_title": "DON'T MISS <br/>THE CHAOS",
+  "newsletter_home_desc": "Join the collective. We spam maybe once a week. No corporate bs.",
+  "newsletter_home_placeholder": "YOUR@EMAIL.COM",
+  "newsletter_home_btn": "SUBSCRIBE",
+  "newsletter_home_url": "#",
+  "social_links": [
+    { "platform": "INSTAGRAM", "url": "https://www.instagram.com/tandangsangar/" },
+    { "platform": "TIKTOK", "url": "https://www.tiktok.com/@tandang.sangar" },
+    { "platform": "YOUTUBE", "url": "https://www.youtube.com/@TandangSangar" },
+    { "platform": "TWITTER (X)", "url": "https://x.com/TandangSangar" }
+  ]
+}

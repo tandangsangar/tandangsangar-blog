@@ -1,0 +1,189 @@
+backend:
+  name: git-gateway
+  branch: main
+  local_backend: true
+
+media_folder: "src/uploads"
+public_folder: "/uploads"
+
+collections:
+  # 1. KOLEKSI ARTIKEL
+  - name: "posts"
+    label: "Articles"
+    folder: "src/posts"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {
+          label: "Layout",
+          name: "layout",
+          widget: "hidden",
+          default: "layouts/post.njk",
+        }
+      # Tags diganti jadi 'list' biar bisa input banyak
+      - { label: "Tags", name: "tags", widget: "list", default: ["posts"] }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - {
+          label: "Author",
+          name: "author",
+          widget: "string",
+          default: "RIZKY HAMMER",
+        }
+      - {
+          label: "Category",
+          name: "category",
+          widget: "select",
+          options: ["MUSIC", "FILM", "VISUAL", "EVENTS"],
+        }
+      - { label: "Cover Image", name: "image", widget: "image" }
+      - { label: "Excerpt (Intro)", name: "excerpt", widget: "text" }
+      - { label: "Body Content", name: "body", widget: "markdown" }
+
+  # 2. KOLEKSI PENGATURAN (Baru)
+  # 2. KOLEKSI PENGATURAN (Baru)
+  # 2. KOLEKSI PENGATURAN
+  - name: "settings"
+    label: "Site Settings"
+    delete: false
+    editor:
+      preview: false
+    files:
+      - name: "global"
+        label: "Global Settings"
+        file: "src/_data/global.json"
+        fields:
+          # --- GAMBAR HERO ---
+          - {
+              label: "Hero Background Image",
+              name: "hero_image",
+              widget: "image",
+              required: false,
+            }
+          # -------------------
+
+          - { label: "Site Name / Logo", name: "site_title", widget: "string" }
+          - {
+              label: "Hero Text 1 (Solid)",
+              name: "hero_text_solid",
+              widget: "string",
+            }
+          - {
+              label: "Hero Text 2 (Outline)",
+              name: "hero_text_outline",
+              widget: "string",
+            }
+          - { label: "Hero Sub-text", name: "hero_sub", widget: "string" }
+
+          # (Manifesto & Marquee tetap sama seperti sebelumnya...)
+          - {
+              label: "Manifesto Title",
+              name: "manifesto_title",
+              widget: "string",
+            }
+          - { label: "Manifesto Body", name: "manifesto_text", widget: "text" }
+          # ... (field manifesto title & body di atasnya tetep sama) ...
+
+          - {
+              label: "Manifesto Button Text",
+              name: "manifesto_btn",
+              widget: "string",
+              default: "EXPLORE",
+            }
+
+          # TAMBAHAN BARU 👇
+          - {
+              label: "Manifesto Button Link",
+              name: "manifesto_link",
+              widget: "string",
+              default: "#articles",
+            }
+
+          # ... (field marquee di bawahnya tetep sama) ...
+          - { label: "Top Marquee Text", name: "marquee_top", widget: "string" }
+          - {
+              label: "Bottom Marquee Text",
+              name: "marquee_bottom",
+              widget: "string",
+            }
+          
+          # --- NEWSLETTER POST (KEEP IT LOUD) ---
+          - { label: "Newsletter Post Title", name: "newsletter_post_title", widget: "string", default: "KEEP IT LOUD" }
+          - { label: "Newsletter Post Placeholder", name: "newsletter_post_placeholder", widget: "string", default: "YOUR@EMAIL.COM" }
+          - { label: "Newsletter Post Button", name: "newsletter_post_btn", widget: "string", default: "SUBMIT" }
+          - { label: "Newsletter Post Action URL", name: "newsletter_post_url", widget: "string", default: "#" }
+
+          # --- NEWSLETTER HOME (DON'T MISS THE CHAOS) ---
+          - { label: "Newsletter Home BG Text", name: "newsletter_home_bg", widget: "string", default: "SUBSCRIBE" }
+          - { label: "Newsletter Home Title", name: "newsletter_home_title", widget: "text", default: "DON'T MISS <br/>THE CHAOS" }
+          - { label: "Newsletter Home Description", name: "newsletter_home_desc", widget: "text", default: "Join the collective. We spam maybe once a week. No corporate bs." }
+          - { label: "Newsletter Home Placeholder", name: "newsletter_home_placeholder", widget: "string", default: "YOUR@EMAIL.COM" }
+          - { label: "Newsletter Home Button", name: "newsletter_home_btn", widget: "string", default: "SUBSCRIBE" }
+          - { label: "Newsletter Home Action URL", name: "newsletter_home_url", widget: "string", default: "#" }
+
+          # --- SOCIAL MEDIA LINKS ---
+          - label: "Social Media Links"
+            name: "social_links"
+            widget: "list"
+            fields:
+              - { label: "Platform Name", name: "platform", widget: "string" }
+              - { label: "URL", name: "url", widget: "string" }
+      # --- SETTING ABOUT PAGE ---
+      - name: "about"
+        label: "About Page"
+        file: "src/_data/about.json"
+        fields:
+          # BAGIAN JUDUL BESAR
+          - {
+              label: "Title Line 1 (Normal)",
+              name: "title_top",
+              widget: "string",
+              default: "ABOUT",
+            }
+          - {
+              label: "Title Line 2 (Highlighted)",
+              name: "title_bottom",
+              widget: "string",
+              default: "US",
+            }
+
+          # BAGIAN INTRO (TEKS KIRI)
+          - { label: "Intro Text", name: "intro", widget: "markdown" }
+
+          # BAGIAN MANIFESTO (BOX KUNING KANAN)
+          - label: "Manifesto Title"
+            name: "manifesto_title"
+            widget: "string"
+            default: "OUR MANIFESTO"
+
+          - label: "Manifesto Points"
+            name: "manifesto_list"
+            widget: "list"
+            fields:
+              - {
+                  label: "Number/Label",
+                  name: "num",
+                  widget: "string",
+                  default: "01",
+                }
+              - {
+                  label: "Content",
+                  name: "text",
+                  widget: "string",
+                  default: "NO FILTERS.",
+                }
+
+          # BAGIAN TEAM (BAWAH)
+          - label: "Team Section Title"
+            name: "team_title"
+            widget: "string"
+            default: "THE TEAM"
+
+          - label: "Team Members"
+            name: "team"
+            widget: "list"
+            fields:
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Role/Jabatan", name: "role", widget: "string" }
+              - { label: "Description", name: "desc", widget: "text" }
+              - { label: "Photo", name: "photo", widget: "image" } # Ini field foto barunya
