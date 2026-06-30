@@ -1,3 +1,5 @@
+const marked = require('marked');
+
 module.exports = function (eleventyConfig) {
   // Passthrough Copy
   eleventyConfig.addPassthroughCopy("src/admin");
@@ -29,6 +31,14 @@ module.exports = function (eleventyConfig) {
   // 3. Filter biar bisa panggil post berdasarkan kategori
   eleventyConfig.addFilter("filterByCategory", function (posts, catName) {
     return posts.filter((p) => p.data.category === catName);
+  });
+
+  // 4. Filter Markdown Parser + Custom Brutalist Caption
+  eleventyConfig.addFilter("marked", function(content) {
+    if (!content) return "";
+    let html = marked.parse(content);
+    // Ubah *Caption: ...* jadi kotak brutalist
+    return html.replace(/<p><em>Caption:\s*(.*?)<\/em><\/p>/gi, '<p class="border-4 border-black p-2 bg-[#ccff00] text-black font-mono text-xs md:text-sm text-center font-bold shadow-[4px_4px_0px_0px_#000000] -mt-6 md:-mt-8 relative z-10 w-11/12 mx-auto uppercase">CAPTION: $1</p>');
   });
 
   // Browser Sync

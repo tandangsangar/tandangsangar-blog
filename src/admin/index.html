@@ -23,6 +23,9 @@
 
     <!-- Marked (for Live Preview) -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Google Identity Services (One Tap) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
@@ -45,6 +48,7 @@
         .article-content a { background-color: #ccff00; color: #000; text-decoration: none; padding: 0 4px; border: 1px solid #000; font-weight: bold; }
         .article-content a:hover { background-color: #000; color: #ccff00; }
         .article-content blockquote { border-left: 8px solid #000; background: #f0f0f0; padding: 1.5rem; margin: 2rem 0; font-family: 'Oswald', sans-serif; font-size: 1.5rem; text-transform: uppercase; }
+        .article-content img { max-width: 100%; height: auto; border: 2px solid #000; display: block; margin: 2rem auto; }
         
         /* EasyMDE custom styling to fit Brutalism */
         .editor-toolbar { border: 2px solid black !important; border-bottom: none !important; border-radius: 0 !important; }
@@ -59,10 +63,8 @@
             <h1 class="text-4xl font-header font-black uppercase mb-2">Redaksi Login</h1>
             <p class="text-sm mb-8">Authorised personnel only.</p>
             
-            <button @click="signInWithGoogle" class="w-full bg-[#ccff00] text-black brutal-border px-6 py-4 font-bold uppercase hover:bg-black hover:text-[#ccff00] transition-colors flex items-center justify-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/></svg>
-                LOGIN WITH GOOGLE
-            </button>
+            <div id="google-btn-container" class="w-full flex justify-center bg-black p-2 brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"></div>
+
         </div>
     </div>
 
@@ -116,10 +118,15 @@
         </aside>
 
         <!-- ONBOARDING MODAL -->
-        <div x-show="showOnboarding" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 p-4">
-            <div class="bg-white p-8 md:p-12 brutal-border brutal-shadow max-w-lg w-full border-4 border-black">
-                <h2 class="text-3xl font-header font-black uppercase mb-4">Selamat Datang di Redaksi!</h2>
-                <p class="mb-6">Sebelum mulai nulis, pasang nama dan foto profil lu dulu biar nampang di artikel yang lu tulis.</p>
+        <div x-show="showOnboarding" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             x-cloak 
+             class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+            <div class="bg-white p-8 md:p-12 brutal-border brutal-shadow max-w-lg w-full border-4 border-black text-center md:text-left">
+                <h2 class="text-3xl font-header font-black uppercase mb-4">Welcome to the Club!</h2>
+                <p class="mb-6 font-mono text-sm leading-relaxed">Pasang nama dan foto dulu dul biar profil-mu tampil di artikel dengan mapan dan asik!</p>
                 
                 <div class="flex flex-col gap-4 mb-8">
                     <div>
@@ -135,8 +142,8 @@
                     </div>
                 </div>
                 
-                <div class="flex justify-end gap-4 items-center">
-                    <button @click="showOnboarding = false" class="text-sm underline font-bold uppercase hover:text-gray-500">Skip, Nanti Aja</button>
+                <div class="flex justify-end gap-4 items-center mt-4">
+                    <button @click="skipOnboarding" class="text-sm underline font-bold uppercase hover:text-gray-500">Skip, Nanti Aja</button>
                     <button @click="saveProfile" class="bg-[#ccff00] text-black border-2 border-black px-6 py-3 font-bold uppercase hover:bg-black hover:text-[#ccff00] brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSavingProfile">
                         <span x-text="isSavingProfile ? 'Menyimpan...' : 'Simpan Profil'"></span>
                     </button>
@@ -228,8 +235,8 @@
                     <button @click="currentView = 'posts'" class="text-sm underline font-bold uppercase hover:text-[#ccff00]">Batal</button>
                 </div>
                 
-                <div class="flex flex-col lg:flex-row gap-8 items-stretch">
-                <form class="bg-white p-6 md:p-8 brutal-border brutal-shadow flex flex-col gap-6 w-full lg:w-1/2">
+                <div class="flex flex-col lg:flex-row gap-8">
+                <form class="bg-white p-6 md:p-8 brutal-border brutal-shadow flex flex-col gap-6 w-full lg:w-1/2 flex-shrink-0">
                     
                     <div class="flex flex-col md:flex-row gap-6">
                         <div class="flex-1 space-y-6">
@@ -270,55 +277,98 @@
                         <textarea x-model="form.excerpt" rows="3" class="w-full border-2 border-black p-3 focus:outline-none"></textarea>
                     </div>
 
-                    <div class="border-t-2 border-black pt-6">
+                    <div class="border-t-2 border-black pt-6 relative">
                         <label class="block text-xs font-bold uppercase mb-2">Body (Markdown/HTML)</label>
+                        
+                        <!-- Hidden file input for EasyMDE image upload -->
+                        <input type="file" id="body-image-upload" accept="image/*" @change="handleBodyImageUpload" class="hidden">
+                        
                         <div x-init="
-                            const mde = new EasyMDE({ element: $refs.mde, spellChecker: false, status: false });
-                            mde.codemirror.on('change', () => { form.body = mde.value() });
-                            $watch('currentView', val => { if(val === 'editor') setTimeout(() => mde.value(form.body || ''), 100) });
+                            const mde = new EasyMDE({ 
+                                element: $refs.mde, 
+                                spellChecker: false, 
+                                status: false,
+                                toolbar: [
+                                    'bold', 'italic', 'heading', '|', 
+                                    'quote', 'unordered-list', 'ordered-list', '|', 
+                                    'link', 
+                                    {
+                                        name: 'image',
+                                        action: function customFunction(editor){
+                                            document.getElementById('body-image-upload').click();
+                                        },
+                                        className: 'fa fa-image',
+                                        title: 'Upload Image',
+                                    },
+                                    {
+                                        name: 'add-caption',
+                                        action: function(editor){
+                                            const cm = editor.codemirror;
+                                            cm.focus();
+                                            cm.replaceSelection('\n*Caption: Tulis caption disini...*\n');
+                                            const end = cm.getCursor();
+                                            const captionLine = end.line - 1;
+                                            cm.setSelection({line: captionLine, ch: 10}, {line: captionLine, ch: 33});
+                                        },
+                                        className: 'fa fa-cc',
+                                        title: 'Tambahkan Caption Gambar (Brutalist)',
+                                    },
+                                    '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide'
+                                ]
+                            });
+                            // Use $data to ensure reactivity in Alpine 3
+                            mde.codemirror.on('change', () => { $data.form.body = mde.value(); });
+                            $watch('currentView', val => { if(val === 'editor') setTimeout(() => mde.value($data.form.body || ''), 100) });
                         ">
                             <textarea x-ref="mde" rows="15" class="w-full border-2 border-black p-4 font-mono text-sm focus:outline-none" placeholder="Mulai nulis..."></textarea>
                         </div>
                     </div>
 
-                    <div class="border-t-2 border-black pt-6 flex justify-end gap-3 flex-wrap">
-                        <button type="button" @click="savePost('draft')" class="bg-gray-300 text-black border-2 border-black px-6 py-3 font-bold uppercase hover:bg-black hover:text-white brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSaving">
-                            <span x-text="isSaving ? 'Menyimpan...' : 'Simpan Draf'"></span>
-                        </button>
-                        <button type="button" @click="savePost('published')" class="bg-[#ccff00] text-black border-2 border-black px-6 py-3 font-bold uppercase hover:bg-black hover:text-[#ccff00] brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSaving">
-                            <span x-text="isSaving ? 'Menyimpan...' : 'Publish Sekarang'"></span>
-                        </button>
+                    <div class="border-t-2 border-black pt-6 flex justify-between items-center gap-3 flex-wrap">
+                        <div class="text-xs font-mono font-bold text-gray-500 animate-pulse w-full md:w-auto text-center md:text-left mb-4 md:mb-0">
+                            Kalo ada bug atau bingung WA Adit aja dul!
+                        </div>
+                        <div class="flex gap-3 w-full md:w-auto justify-end">
+                            <button type="button" @click="savePost('draft')" class="bg-gray-300 text-black border-2 border-black px-4 md:px-6 py-3 font-bold uppercase hover:bg-black hover:text-white brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none text-xs md:text-sm" :disabled="isSaving">
+                                <span x-text="isSaving ? 'Menyimpan...' : 'Simpan Draf'"></span>
+                            </button>
+                            <button type="button" @click="savePost('published')" class="bg-[#ccff00] text-black border-2 border-black px-4 md:px-6 py-3 font-bold uppercase hover:bg-black hover:text-[#ccff00] brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none text-xs md:text-sm" :disabled="isSaving">
+                                <span x-text="isSaving ? 'Menyimpan...' : 'Publish Sekarang'"></span>
+                            </button>
+                        </div>
                     </div>
 
                 </form>
 
                 <!-- LIVE PREVIEW PANE -->
-                <div class="w-full lg:w-1/2 bg-white brutal-border brutal-shadow relative overflow-hidden flex flex-col">
-                    <div class="bg-black text-white p-2 text-xs font-bold uppercase text-center border-b-2 border-black sticky top-0 z-10">Live Preview</div>
-                    
-                    <div class="p-6 md:p-8 flex-grow overflow-y-auto" style="max-height: calc(100vh - 200px);">
-                        <div class="mb-8 border-b-2 border-black pb-8">
-                            <span class="bg-black text-[#ccff00] px-2 py-1 text-xs font-bold uppercase border border-black inline-block mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]" x-text="form.category"></span>
-                            <h1 class="font-header text-5xl uppercase leading-[0.85] tracking-tight break-words mb-4" x-text="form.title || 'Judul Artikel'"></h1>
-                            
-                            <div class="flex items-center gap-3 mt-4">
-                                <img :src="userProfile?.avatar_url || 'https://via.placeholder.com/40'" class="w-10 h-10 bg-black rounded-full border-2 border-[#ccff00] overflow-hidden object-cover">
-                                <span class="font-header text-xl uppercase" x-text="userProfile?.full_name || 'Author Name'"></span>
+                <div class="w-full lg:w-1/2 relative min-h-[500px]">
+                    <div class="absolute inset-0 bg-white brutal-border brutal-shadow overflow-hidden flex flex-col">
+                        <div class="bg-black text-white p-2 text-xs font-bold uppercase text-center border-b-2 border-black sticky top-0 z-10 flex-shrink-0">Live Preview</div>
+                        
+                        <div class="p-6 md:p-8 flex-grow overflow-y-auto relative">
+                            <div class="mb-8 border-b-2 border-black pb-8">
+                                <span class="bg-black text-[#ccff00] px-2 py-1 text-xs font-bold uppercase border border-black inline-block mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]" x-text="form.category"></span>
+                                <h1 class="font-header text-5xl uppercase leading-[0.85] tracking-tight break-words mb-4" x-text="form.title || 'Judul Artikel'"></h1>
+                                
+                                <div class="flex items-center gap-3 mt-4">
+                                    <img :src="userProfile?.avatar_url || 'https://via.placeholder.com/40'" class="w-10 h-10 bg-black rounded-full border-2 border-[#ccff00] overflow-hidden object-cover">
+                                    <span class="font-header text-xl uppercase" x-text="userProfile?.full_name || 'Author Name'"></span>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="w-full aspect-video border-2 border-black overflow-hidden relative mb-8 bg-gray-100">
-                            <template x-if="form.cover_image">
-                                <img :src="form.cover_image" class="w-full h-full object-cover">
-                            </template>
-                            <template x-if="!form.cover_image">
-                                <div class="w-full h-full flex items-center justify-center text-gray-400 font-mono text-xs">No Cover Image</div>
-                            </template>
-                        </div>
-
-                        <p class="text-xl font-serif italic leading-relaxed mb-8 border-l-4 border-[#ccff00] pl-6 py-2 text-gray-800" x-text="form.excerpt || 'Excerpt artikel akan muncul di sini...'"></p>
-
-                        <div class="article-content font-serif text-lg leading-8 text-gray-800" x-html="parsedBody()">
+    
+                            <div class="w-full aspect-video border-2 border-black overflow-hidden relative mb-8 bg-gray-100">
+                                <template x-if="form.cover_image">
+                                    <img :src="form.cover_image" class="w-full h-full object-cover">
+                                </template>
+                                <template x-if="!form.cover_image">
+                                    <div class="w-full h-full flex items-center justify-center text-gray-400 font-mono text-xs">No Cover Image</div>
+                                </template>
+                            </div>
+    
+                            <p class="text-xl font-serif italic leading-relaxed mb-8 border-l-4 border-[#ccff00] pl-6 py-2 text-gray-800" x-text="form.excerpt || 'Excerpt artikel akan muncul di sini...'"></p>
+    
+                            <div class="article-content font-serif text-lg leading-8 text-gray-800" x-html="parsedBody()">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -355,8 +405,9 @@
                                         <span x-show="user.role === 'author'" class="bg-gray-200 text-gray-600 px-2 py-1 font-bold uppercase border border-black text-xs">Author</span>
                                     </td>
                                     <td class="p-4">
-                                        <button x-show="user.role === 'author' && user.id !== session.user.id" @click="updateUserRole(user.id, 'admin')" class="bg-black text-white px-3 py-1 font-bold text-xs uppercase hover:bg-[#ccff00] hover:text-black border border-black transition-colors">Jadikan Admin</button>
-                                        <button x-show="user.role === 'admin' && user.id !== session.user.id" @click="updateUserRole(user.id, 'author')" class="bg-white text-black px-3 py-1 font-bold text-xs uppercase hover:bg-gray-200 border border-black transition-colors">Turunkan ke Author</button>
+                                        <button x-show="user.role === 'author' && user.id !== session.user.id" @click="updateUserRole(user.id, 'admin')" class="bg-black text-white px-3 py-1 font-bold text-xs uppercase hover:bg-[#ccff00] hover:text-black border border-black transition-colors mb-1 md:mb-0">Jadikan Admin</button>
+                                        <button x-show="user.role === 'admin' && user.id !== session.user.id" @click="updateUserRole(user.id, 'author')" class="bg-white text-black px-3 py-1 font-bold text-xs uppercase hover:bg-gray-200 border border-black transition-colors mb-1 md:mb-0">Turunkan ke Author</button>
+                                        <button x-show="user.id !== session.user.id" @click="deleteUserAccount(user.id)" class="bg-red-500 text-white px-3 py-1 font-bold text-xs uppercase hover:bg-black border border-black transition-colors md:ml-2">Hapus</button>
                                         <span x-show="user.id === session.user.id" class="text-xs text-gray-400 italic">It's You</span>
                                     </td>
                                 </tr>
@@ -416,6 +467,20 @@
                                     <label class="block text-xs font-bold uppercase mb-1">Link Tombol</label>
                                     <input type="text" x-model="settingsForm.global_manifesto_link" class="w-full border-2 border-black p-2 font-mono text-xs focus:outline-none focus:border-[#ccff00]">
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-100 p-4 border-2 border-black mt-2">
+                        <label class="block text-xs font-bold uppercase mb-4 border-b border-black pb-2">Bagian Subscribe / Newsletter</label>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Judul (Gunakan &lt;br/&gt; untuk enter)</label>
+                                <input type="text" x-model="settingsForm.global_newsletter_home_title" class="w-full border-2 border-black p-2 font-header uppercase focus:outline-none focus:border-[#ccff00]">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Teks Kecil (Deskripsi)</label>
+                                <textarea x-model="settingsForm.global_newsletter_home_desc" rows="2" class="w-full border-2 border-black p-2 font-mono text-xs focus:outline-none focus:border-[#ccff00]"></textarea>
                             </div>
                         </div>
                     </div>
@@ -532,14 +597,43 @@
                             this.userProfile = null;
                         }
                     });
+                    
+                    // Initialize Google Identity Services
+                    if (window.google) {
+                        this.initGoogleAuth();
+                    } else {
+                        window.addEventListener('load', () => this.initGoogleAuth());
+                    }
                 },
-
-                async signInWithGoogle() {
-                    const { error } = await supabaseClient.auth.signInWithOAuth({
-                        provider: 'google',
-                        options: { redirectTo: window.location.href }
+                
+                initGoogleAuth() {
+                    google.accounts.id.initialize({
+                        client_id: "794199583720-pnod8pkf2ru2c9fjjspvkf6d9gu88png.apps.googleusercontent.com",
+                        callback: this.handleGoogleCallback.bind(this),
+                        context: 'signin'
                     });
-                    if (error) alert(error.message);
+                    
+                    const btnContainer = document.getElementById('google-btn-container');
+                    if (btnContainer) {
+                        google.accounts.id.renderButton(
+                            btnContainer,
+                            { theme: "filled_black", size: "large", type: "standard", shape: "rectangular", text: "signin_with", width: "400" }
+                        );
+                    }
+                },
+                
+                async handleGoogleCallback(response) {
+                    try {
+                        const { data, error } = await supabaseClient.auth.signInWithIdToken({
+                            provider: 'google',
+                            token: response.credential
+                        });
+                        
+                        if (error) throw error;
+                    } catch (error) {
+                        console.error('Google Auth Error:', error);
+                        alert("Gagal login dengan Google: " + error.message);
+                    }
                 },
 
                 async signOut() {
@@ -562,9 +656,12 @@
                         this.profileForm.full_name = data.full_name || '';
                         this.profileForm.avatar_url = data.avatar_url || '';
                         
-                        // Tampilkan modal onboarding jika data kosong
-                        if (!data.full_name && !data.avatar_url) {
-                            this.showOnboarding = true;
+                        // Tampilkan modal onboarding jika belum pernah lewat onboarding di device ini
+                        if (!localStorage.getItem('onboarding_done_' + this.session.user.id)) {
+                            // Delay dikit biar keliatan jelas kalau ini tuh popup di atas halaman admin
+                            setTimeout(() => {
+                                this.showOnboarding = true;
+                            }, 400);
                         }
                         
                         this.fetchPosts(); // Fetch posts after auth
@@ -635,20 +732,47 @@
                     }
                 },
                 
+                skipOnboarding() {
+                    localStorage.setItem('onboarding_done_' + this.session.user.id, 'true');
+                    this.showOnboarding = false;
+                },
+                
                 async saveProfile() {
                     this.isSavingProfile = true;
                     try {
-                        const { error } = await supabaseClient.from('users').update({
+                        // Cek apakah nama tampilan sudah dipakai orang lain
+                        if (this.profileForm.full_name) {
+                            const { data: existingUsers, error: checkError } = await supabaseClient
+                                .from('users')
+                                .select('id')
+                                .eq('full_name', this.profileForm.full_name)
+                                .neq('id', this.session.user.id);
+                                
+                            if (existingUsers && existingUsers.length > 0) {
+                                alert("Nama Tampilan ini udah dipakai akun lain dul! Coba pakai nama yang beda.");
+                                this.isSavingProfile = false;
+                                return;
+                            }
+                        }
+
+                        const { data, error } = await supabaseClient.from('users').update({
                             full_name: this.profileForm.full_name,
                             avatar_url: this.profileForm.avatar_url
-                        }).eq('id', this.session.user.id);
+                        }).eq('id', this.session.user.id).select();
                         
                         if (error) throw error;
                         
+                        if (!data || data.length === 0) {
+                            // If it fails silently, we just alert but we still let them close the modal so they are not blocked.
+                            alert("Peringatan: Gagal nyimpen permanen ke database karena RLS Update di Supabase belum diizinin. Tapi gua tetep simpen di layar lu buat sekarang.");
+                        } else {
+                            alert("Profil berhasil diupdate!");
+                        }
+                        
                         this.userProfile.full_name = this.profileForm.full_name;
                         this.userProfile.avatar_url = this.profileForm.avatar_url;
+                        localStorage.setItem('onboarding_done_' + this.session.user.id, 'true');
                         this.showOnboarding = false;
-                        alert("Profil berhasil diupdate!");
                     } catch (error) {
                         console.error(error);
                         alert("Error saving profile: " + error.message);
@@ -677,6 +801,37 @@
                     }
                 },
                 
+                async handleBodyImageUpload(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1200, useWebWorker: true, fileType: 'image/webp' };
+                    try {
+                        const compressedFile = await imageCompression(file, options);
+                        const fileName = `body_${Date.now()}_${Math.random().toString(36).substring(7)}.webp`;
+                        
+                        const { data, error } = await supabaseClient.storage.from('images').upload(fileName, compressedFile);
+                        if (error) throw error;
+
+                        const { data: urlData } = supabaseClient.storage.from('images').getPublicUrl(data.path);
+                        
+                        // Insert markdown directly into EasyMDE
+                        const cm = document.querySelector('.CodeMirror').CodeMirror;
+                        cm.focus();
+                        cm.replaceSelection(`\n![Gambar](${urlData.publicUrl})\n*Caption: Tulis caption disini...*\n`);
+                        
+                        const end = cm.getCursor();
+                        const captionLine = end.line - 1;
+                        cm.setSelection({line: captionLine, ch: 10}, {line: captionLine, ch: 33});
+                        
+                        // Clear the input so same file can be selected again if needed
+                        event.target.value = '';
+                    } catch (error) {
+                        console.error(error);
+                        alert("Error uploading image");
+                    }
+                },
+                
                 async fetchAllUsers() {
                     if (this.userRole !== 'admin') return;
                     const { data, error } = await supabaseClient.from('users').select('*').order('created_at', { ascending: false });
@@ -684,10 +839,28 @@
                 },
                 
                 async updateUserRole(userId, newRole) {
-                    if (confirm(`Yakin merubah role pengguna ini menjadi ${newRole}?`)) {
+                    try {
                         const { error } = await supabaseClient.from('users').update({ role: newRole }).eq('id', userId);
-                        if (error) alert("Error updating role: " + error.message);
-                        else this.fetchAllUsers();
+                        if (error) throw error;
+                        this.fetchAllUsers();
+                    } catch (error) {
+                        console.error(error);
+                        alert("Gagal update role: " + error.message);
+                    }
+                },
+                
+                async deleteUserAccount(userId) {
+                    if (!confirm("Yakin mau hapus akun ini? Artikel punya dia juga bakal ikut kehapus permanen!")) return;
+                    
+                    try {
+                        const { error } = await supabaseClient.rpc('delete_user_by_admin', { user_id_param: userId });
+                        if (error) throw error;
+                        
+                        alert("Akun berhasil dihapus!");
+                        this.fetchAllUsers();
+                    } catch (error) {
+                        console.error(error);
+                        alert("Gagal hapus akun: " + error.message + " (Pastiin SQL Function udah dijalanin di Supabase)");
                     }
                 },
                 
@@ -709,7 +882,9 @@
                             global_manifesto_title: settingsMap.global_manifesto_title || '',
                             global_manifesto_text: settingsMap.global_manifesto_text || '',
                             global_manifesto_btn: settingsMap.global_manifesto_btn || '',
-                            global_manifesto_link: settingsMap.global_manifesto_link || ''
+                            global_manifesto_link: settingsMap.global_manifesto_link || '',
+                            global_newsletter_home_title: settingsMap.global_newsletter_home_title || '',
+                            global_newsletter_home_desc: settingsMap.global_newsletter_home_desc || ''
                         };
                     }
                 },
@@ -736,7 +911,10 @@
                 },
 
                 parsedBody() {
-                    return marked.parse(this.form.body || 'Mulai mengetik *isi artikel*...');
+                    let content = this.form.body || 'Mulai mengetik *isi artikel*...';
+                    let html = marked.parse(content);
+                    // Parse custom caption for Live Preview
+                    return html.replace(/<p><em>Caption:\s*(.*?)<\/em><\/p>/gi, '<p class="border-4 border-black p-2 bg-[#ccff00] text-black font-mono text-xs md:text-sm text-center font-bold shadow-[4px_4px_0px_0px_#000000] -mt-6 md:-mt-8 relative z-10 w-11/12 mx-auto uppercase">CAPTION: $1</p>');
                 },
 
                 async savePost(statusToSave) {
@@ -759,7 +937,10 @@
                             res = await supabaseClient.from('posts').update(postData).eq('id', this.editingPostId);
                         } else {
                             // Insert
-                            res = await supabaseClient.from('posts').insert([postData]);
+                            res = await supabaseClient.from('posts').insert([postData]).select();
+                            if (res.data && res.data.length > 0) {
+                                this.editingPostId = res.data[0].id;
+                            }
                         }
 
                         if (res.error) throw res.error;

@@ -16,4 +16,4 @@ eleventyComputed:
   excerpt: "{{ p.data.excerpt }}"
   date: "{{ p.date }}"
 ---
-{{ p.content | safe }}
+{{ p.content | marked | safe }}

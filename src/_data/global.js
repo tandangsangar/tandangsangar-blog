@@ -62,6 +62,8 @@ module.exports = async function() {
         manifesto_title: settings.global_manifesto_title || defaults.manifesto_title,
         manifesto_text: settings.global_manifesto_text || defaults.manifesto_text,
         manifesto_btn: settings.global_manifesto_btn || defaults.manifesto_btn,
-        manifesto_link: settings.global_manifesto_link || defaults.manifesto_link
+        manifesto_link: settings.global_manifesto_link || defaults.manifesto_link,
+        newsletter_home_title: settings.global_newsletter_home_title || defaults.newsletter_home_title,
+        newsletter_home_desc: settings.global_newsletter_home_desc || defaults.newsletter_home_desc
     };
 };

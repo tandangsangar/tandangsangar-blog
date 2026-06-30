@@ -103,17 +103,6 @@ layout: layouts/base.njk
                                 {{ date | date("DD.MM.YYYY") }}
                             </p>
                         </div>
-
-                        <div>
-                             <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">TAGS</p>
-                             <div class="flex flex-wrap gap-2">
-                                {% for tag in tags %}
-                                    {% if tag != "posts" %}
-                                    <span class="text-xs font-bold border border-gray-400 px-1 text-gray-600 hover:bg-black hover:text-white cursor-crosshair transition-colors">#{{ tag }}</span>
-                                    {% endif %}
-                                {% endfor %}
-                             </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -138,17 +127,20 @@ layout: layouts/base.njk
                 </div>
             </div>
 
-            <div class="border-t-2 border-black p-8 md:p-12 bg-[#ccff00] flex flex-col items-center text-center">
-                <h3 class="font-header text-4xl uppercase mb-6">SPREAD THE NOISE</h3>
-                <div class="flex flex-wrap gap-4 justify-center w-full">
+            <div class="border-t-2 border-black p-8 md:p-12 bg-[#ccff00] flex flex-col md:flex-row items-center justify-between gap-6">
+                <h3 class="font-header text-3xl md:text-4xl uppercase mb-0 text-center md:text-left">BAGIKAN ARTIKEL</h3>
+                <div class="flex flex-wrap gap-4 justify-center md:justify-end">
                     <button onclick="navigator.clipboard.writeText(window.location.href); alert('LINK COPIED TO CLIPBOARD!');" 
-                            class="flex-1 min-w-[200px] bg-white border-2 border-black px-6 py-4 font-bold font-header text-xl uppercase hover:bg-black hover:text-white hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-3 group">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                        COPY LINK
+                            class="w-14 h-14 bg-white border-2 border-black hover:bg-black hover:text-white hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center group" title="Copy Link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                     </button>
                     <a href="whatsapp://send?text={{ title }} - {{ metadata.url }}{{ page.url }}" 
-                       class="flex-1 min-w-[200px] bg-black text-white border-2 border-black px-6 py-4 font-bold font-header text-xl uppercase hover:bg-white hover:text-black hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none shadow-[4px_4px_0px_0px_#ffffff] transition-all flex items-center justify-center gap-3">
-                        WHATSAPP
+                       class="w-14 h-14 bg-black text-white border-2 border-black hover:bg-white hover:text-black hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none shadow-[4px_4px_0px_0px_#ffffff] transition-all flex items-center justify-center" title="WhatsApp">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?text={{ title }}&url={{ metadata.url }}{{ page.url }}" target="_blank"
+                       class="w-14 h-14 bg-white border-2 border-black hover:bg-black hover:text-white hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center font-bold text-xl" title="Twitter/X">
+                        X
                     </a>
                 </div>
             </div>
@@ -160,8 +152,8 @@ layout: layouts/base.njk
 <section class="border-b-2 border-black bg-[#f0f0f0] py-12 overflow-hidden">
     <div class="container mx-auto px-4 mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
         <h2 class="font-header text-4xl md:text-6xl uppercase leading-tight md:leading-none">
-            RELATED <br class="md:hidden"/>
-            <span class="text-[#ccff00] bg-black px-2 inline-block transform -rotate-1 mt-1 md:mt-0">DATA_LOGS</span>
+            ARTIKEL <br class="md:hidden"/>
+            <span class="text-[#ccff00] bg-black px-2 inline-block transform -rotate-1 mt-1 md:mt-0">TERKAIT</span>
         </h2>
         <span class="font-mono text-xs hidden md:block animate-pulse">/// SCROLL HORIZONTALLY >>></span>
     </div>
@@ -212,13 +204,16 @@ layout: layouts/base.njk
 
 <div class="bg-[#ccff00] border-b-2 border-black">
     <section class="w-full py-16 px-4 md:px-12 flex flex-col items-center justify-center relative overflow-hidden">
-        <h2 class="text-5xl md:text-7xl font-header uppercase leading-[0.85] mb-8 text-black relative z-10 text-center">
-          {{ global.newsletter_post_title or "KEEP IT LOUD" }}
+        <h2 class="text-4xl md:text-6xl font-header uppercase leading-[0.85] mb-2 text-black relative z-10 text-center">
+          {{ global.newsletter_post_title or "Subscribe biar tetep gaul!" }}
         </h2>
+        <p class="font-mono text-sm mb-8 text-black relative z-10 text-center max-w-md">
+          dapatkan kabar artikel terbaru tandang sangar via email
+        </p>
         <form action="{{ global.newsletter_post_url or '#' }}" method="POST" class="flex w-full max-w-lg border-2 border-black brutal-shadow bg-white relative z-10">
             <input type="email" placeholder="{{ global.newsletter_post_placeholder or 'YOUR@EMAIL.COM' }}" required class="flex-grow p-4 font-mono focus:outline-none">
             <button type="submit" class="bg-black text-white px-6 font-bold font-header uppercase hover:bg-[#ccff00] hover:text-black border-l-2 border-black transition-colors">
-            {{ global.newsletter_post_btn or "SUBMIT" }}
+            KIRIM
             </button>
         </form>
     </section>
