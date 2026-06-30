@@ -253,7 +253,7 @@
                 async signInWithGoogle() {
                     const { error } = await supabaseClient.auth.signInWithOAuth({
                         provider: 'google',
-                        options: { redirectTo: window.location.origin + '/admin/' }
+                        options: { redirectTo: window.location.href }
                     });
                     if (error) alert(error.message);
                 },
