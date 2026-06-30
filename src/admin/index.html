@@ -605,13 +605,13 @@
                             this.userProfile = null;
                         }
                     });
-                    
-                    // Initialize Google Identity Services
-                    if (window.google) {
-                        this.initGoogleAuth();
-                    } else {
-                        window.addEventListener('load', () => this.initGoogleAuth());
-                    }
+                    // Initialize Google Identity Services as soon as it's available
+                    const checkGoogle = setInterval(() => {
+                        if (window.google) {
+                            clearInterval(checkGoogle);
+                            this.initGoogleAuth();
+                        }
+                    }, 100);
                 },
                 
                 initGoogleAuth() {
