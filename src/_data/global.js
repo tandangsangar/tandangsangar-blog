@@ -17,7 +17,7 @@ const defaults = {
     { "platform": "Spotify", "url": "https://open.spotify.com/user/312cf35awcovgqt3migvgyklqsnm?si=7-rC5lmWRaKRi0AMiTqb0Q" }
   ],
   "marquee_bottom": "WEDHARAN SANGAR   ⚡   OTOP-SCENE  ⚡   HURU-HARA POP  ⚡    NOKJURNAL HIPSTER  ⚡",
-  "newsletter_home_desc": "Join the collective. We spam maybe once a week. No corporate bs.",
+  "newsletter_home_desc": "Dapatkan kabar artikel terbaru Tandang Sangar via email.",
   "manifesto_text": "MARI BERSAMA MENYAMBUT BULAN RAMADHAN DENGAN TANDANG SYARI'AH",
   "newsletter_home_url": "#",
   "hero_text_outline": "SANGAR",
@@ -30,7 +30,7 @@ const defaults = {
   "newsletter_post_placeholder": "YOUR@EMAIL.COM",
   "hero_sub": "MEDIA ALTERNATIF /// NOISE /// VISUAL /// CULTURE",
   "manifesto_btn": "TONTON SEKARANG",
-  "newsletter_home_title": "DON'T MISS <br/>THE CHAOS",
+  "newsletter_home_title": "SUBSCRIBE BIAR TETEP GAUL!",
   "hero_text_solid": "TANDANG",
   "newsletter_post_title": "KEEP IT LOUD",
   "newsletter_home_bg": "SUBSCRIBE"
@@ -64,6 +64,8 @@ module.exports = async function() {
         manifesto_btn: settings.global_manifesto_btn || defaults.manifesto_btn,
         manifesto_link: settings.global_manifesto_link || defaults.manifesto_link,
         newsletter_home_title: settings.global_newsletter_home_title || defaults.newsletter_home_title,
-        newsletter_home_desc: settings.global_newsletter_home_desc || defaults.newsletter_home_desc
+        newsletter_home_desc: settings.global_newsletter_home_desc || defaults.newsletter_home_desc,
+        newsletter_home_placeholder: settings.global_newsletter_home_placeholder || defaults.newsletter_home_placeholder,
+        newsletter_home_btn: settings.global_newsletter_home_btn || defaults.newsletter_home_btn
     };
 };

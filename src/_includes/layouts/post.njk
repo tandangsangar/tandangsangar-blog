@@ -202,21 +202,30 @@ layout: layouts/base.njk
     </div>
 </section>
 
-<div class="bg-[#ccff00] border-b-2 border-black">
-    <section class="w-full py-16 px-4 md:px-12 flex flex-col items-center justify-center relative overflow-hidden">
-        <h2 class="text-4xl md:text-6xl font-header uppercase leading-[0.85] mb-2 text-black relative z-10 text-center">
-          {{ global.newsletter_post_title or "Subscribe biar tetep gaul!" }}
+<div class="border-t-2 border-black bg-[#ccff00] overflow-hidden">
+  <section class="w-full py-24 md:py-32 px-4 md:px-12 flex flex-col items-center justify-center relative overflow-hidden text-center">
+    
+    <div class="absolute inset-0 z-0 flex items-center justify-center opacity-10 md:opacity-20 pointer-events-none w-full overflow-hidden">
+         <h1 class="text-[20vw] font-header font-black text-black leading-none">{{ global.newsletter_home_bg or "SUBSCRIBE" }}</h1>
+    </div>
+    
+    <div class="flex flex-col lg:flex-row items-end lg:items-center justify-between gap-12 max-w-7xl mx-auto w-full relative z-10">
+      <div class="lg:w-1/2 text-left w-full">
+        <h2 class="text-6xl md:text-8xl font-header uppercase leading-[0.85] mb-6 text-black">
+          {{ global.newsletter_home_title | safe if global.newsletter_home_title else "DON'T MISS <br/>THE CHAOS" | safe }}
         </h2>
-        <p class="font-mono text-sm mb-8 text-black relative z-10 text-center max-w-md">
-          dapatkan kabar artikel terbaru tandang sangar via email
+        <p class="font-mono font-bold text-base md:text-lg max-w-md border-l-4 border-black pl-4 py-1 text-black">
+          {{ global.newsletter_home_desc or "Join the collective. We spam maybe once a week. No corporate bs." }}
         </p>
-        <form action="{{ global.newsletter_post_url or '#' }}" method="POST" class="flex w-full max-w-lg border-2 border-black brutal-shadow bg-white relative z-10">
-            <input type="email" placeholder="{{ global.newsletter_post_placeholder or 'YOUR@EMAIL.COM' }}" required class="flex-grow p-4 font-mono focus:outline-none">
-            <button type="submit" class="bg-black text-white px-6 font-bold font-header uppercase hover:bg-[#ccff00] hover:text-black border-l-2 border-black transition-colors">
-            KIRIM
-            </button>
-        </form>
-    </section>
+      </div>
+      <form action="{{ global.newsletter_home_url or '#' }}" method="POST" class="lg:w-1/2 w-full flex flex-col md:flex-row gap-0 items-stretch brutal-shadow">
+        <input type="email" placeholder="{{ global.newsletter_home_placeholder or 'YOUR@EMAIL.COM' }}" required class="flex-grow border-2 border-black p-6 font-mono text-lg focus:outline-none focus:bg-black focus:text-[#ccff00] transition-colors placeholder:text-gray-500 text-black">
+        <button type="submit" class="bg-black text-white px-8 py-4 font-bold font-header text-xl uppercase border-2 border-black hover:bg-white hover:text-black transition-all">
+          {{ global.newsletter_home_btn or "SUBSCRIBE" }}
+        </button>
+      </form>
+    </div>
+  </section>
 </div>
 
 <div class="h-24 w-full flex justify-center bg-white">

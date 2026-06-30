@@ -482,6 +482,14 @@
                                 <label class="block text-xs font-bold uppercase mb-1">Teks Kecil (Deskripsi)</label>
                                 <textarea x-model="settingsForm.global_newsletter_home_desc" rows="2" class="w-full border-2 border-black p-2 font-mono text-xs focus:outline-none focus:border-[#ccff00]"></textarea>
                             </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Placeholder Email</label>
+                                <input type="text" x-model="settingsForm.global_newsletter_home_placeholder" class="w-full border-2 border-black p-2 font-mono text-xs focus:outline-none focus:border-[#ccff00]">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Teks Tombol</label>
+                                <input type="text" x-model="settingsForm.global_newsletter_home_btn" class="w-full border-2 border-black p-2 font-header uppercase focus:outline-none focus:border-[#ccff00]">
+                            </div>
                         </div>
                     </div>
 
@@ -884,7 +892,9 @@
                             global_manifesto_btn: settingsMap.global_manifesto_btn || '',
                             global_manifesto_link: settingsMap.global_manifesto_link || '',
                             global_newsletter_home_title: settingsMap.global_newsletter_home_title || '',
-                            global_newsletter_home_desc: settingsMap.global_newsletter_home_desc || ''
+                            global_newsletter_home_desc: settingsMap.global_newsletter_home_desc || '',
+                            global_newsletter_home_placeholder: settingsMap.global_newsletter_home_placeholder || '',
+                            global_newsletter_home_btn: settingsMap.global_newsletter_home_btn || ''
                         };
                     }
                 },

@@ -28,15 +28,15 @@ title: "RADIO"
             TANDANG RADIO
         </h1>
         <p class="font-mono text-white max-w-md mb-8 text-lg border-l-4 border-[#ccff00] pl-4 text-left">
-            WARNING: Transmisi ini membutuhkan akses kamera dan audio untuk menciptakan distorsi visual reaktif. Model AI akan diunduh saat pertama kali dimulai.
+            coba audio reactive webcam-visualizer tandang sangar dengan mengizinkan akses kamera
         </p>
         <button id="start-btn" class="bg-[#ccff00] text-black font-header text-3xl font-black uppercase px-8 py-4 border-4 border-[#ccff00] hover:bg-black hover:text-[#ccff00] transition-colors brutal-shadow cursor-pointer select-none">
-            INITIATE TRANSMISSION
+            EXPLORE VISUALIZER
         </button>
         
         <!-- Progress Bar (Mulai Tersembunyi) -->
         <div id="loading-container" class="hidden flex-col items-center mt-4 w-full max-w-md">
-            <div class="font-mono text-[#ccff00] mb-2 uppercase tracking-widest text-sm">Downloading Neural Net...</div>
+            <div class="font-mono text-[#ccff00] mb-2 uppercase tracking-widest text-sm">bentar lagi siap dul!</div>
             <div class="w-full border-2 border-[#ccff00] p-1 bg-black">
                 <div id="progress-bar" class="h-4 bg-[#ccff00] w-0 transition-all duration-300"></div>
             </div>
@@ -54,9 +54,47 @@ title: "RADIO"
         <button id="toggle-play-btn" class="mt-2 bg-[#ccff00] text-black font-bold font-mono px-4 py-1 border-2 border-[#ccff00] hover:bg-black hover:text-[#ccff00] transition-colors w-full text-center cursor-pointer">
             [ PAUSE ]
         </button>
+        <button id="stop-webcam-btn" class="mt-2 bg-red-600 text-white font-bold font-mono px-4 py-1 border-2 border-red-600 hover:bg-black hover:text-red-600 transition-colors w-full text-center cursor-pointer">
+            [ OFF WEBCAM ]
+        </button>
 
         <div class="mt-2 text-white font-mono text-xs opacity-70 border-l-2 border-[#ccff00] pl-2">
             Bergeraklah di depan layar.<br/>Glow akan merespon gelombang bass.
+        </div>
+    </div>
+
+    <!-- UI Panel: Realtime Slider -->
+    <div id="visualizer-controls" class="absolute bottom-4 right-4 z-50 bg-black border-2 border-[#ccff00] p-4 text-[#ccff00] font-mono shadow-[4px_4px_0_0_#ccff00] w-72 max-w-full hidden">
+        <h3 class="text-sm font-bold border-b border-[#ccff00] pb-2 mb-4 uppercase">Visualizer Controls</h3>
+        
+        <div class="mb-4">
+            <label class="block text-xs mb-1">Exposure Multiplier (<span id="val-exposure">1.0</span>)</label>
+            <input type="range" id="ctrl-exposure" min="0.1" max="3.0" step="0.1" value="1.0" class="w-full cursor-pointer accent-[#ccff00]">
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-xs mb-1">Contrast (<span id="val-contrast">1.36</span>)</label>
+            <input type="range" id="ctrl-contrast" min="0.1" max="3.0" step="0.1" value="1.36" class="w-full cursor-pointer accent-[#ccff00]">
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-xs mb-1">Reactivity/Glow (<span id="val-glow">1.0</span>)</label>
+            <input type="range" id="ctrl-glow" min="0.0" max="3.0" step="0.1" value="1.0" class="w-full cursor-pointer accent-[#ccff00]">
+        </div>
+        
+        <div class="flex gap-2">
+            <div class="w-1/3">
+                <label class="block text-[10px] uppercase mb-1">Dark</label>
+                <input type="text" id="ctrl-char-dark" value="." maxlength="1" class="w-full bg-transparent border border-[#ccff00] text-center text-white focus:outline-none focus:bg-[#ccff00] focus:text-black">
+            </div>
+            <div class="w-1/3">
+                <label class="block text-[10px] uppercase mb-1">Mid</label>
+                <input type="text" id="ctrl-char-mid" value="+" maxlength="1" class="w-full bg-transparent border border-[#ccff00] text-center text-white focus:outline-none focus:bg-[#ccff00] focus:text-black">
+            </div>
+            <div class="w-1/3">
+                <label class="block text-[10px] uppercase mb-1">Light</label>
+                <input type="text" id="ctrl-char-light" value="#" maxlength="1" class="w-full bg-transparent border border-[#ccff00] text-center text-white focus:outline-none focus:bg-[#ccff00] focus:text-black">
+            </div>
         </div>
     </div>
 
@@ -64,9 +102,10 @@ title: "RADIO"
     <div id="canvas-container" class="absolute inset-0 z-10 w-full h-full"></div>
 
     <!-- Hidden Video, Audio, and Offscreen Canvas -->
+    <video id="bg-video" src="/uploads/radio/golden-snake.mp4" loop autoplay muted playsinline crossorigin="anonymous" class="hidden"></video>
     <video id="webcam-video" autoplay playsinline class="hidden"></video>
     <canvas id="mask-canvas" class="hidden" width="640" height="480"></canvas>
-    <audio id="radio-audio" crossorigin="anonymous" src="https://ice2.somafm.com/groovesalad-128-mp3" class="hidden"></audio>
+    <audio id="radio-audio" crossorigin="anonymous" src="https://ice2.somafm.com/groovesalad-128-mp3" class="hidden" autoplay></audio>
 
     </div> <!-- End Inner Container -->
 
@@ -103,9 +142,11 @@ title: "RADIO"
     const radioUi = document.getElementById('radio-ui');
     const playingUi = document.getElementById('playing-ui');
     const togglePlayBtn = document.getElementById('toggle-play-btn');
+    const stopWebcamBtn = document.getElementById('stop-webcam-btn');
     const liveIndicator = document.getElementById('live-indicator');
     const liveText = document.getElementById('live-text');
     const video = document.getElementById('webcam-video');
+    const bgVideo = document.getElementById('bg-video');
     const audio = document.getElementById('radio-audio');
     const container = document.getElementById('canvas-container');
     const maskCanvas = document.getElementById('mask-canvas');
@@ -113,7 +154,7 @@ title: "RADIO"
 
     let scene, camera, renderer, particles;
     let audioContext, analyser, dataArray;
-    let canvasTexture;
+    let canvasTexture, videoTexture;
     let isPlaying = true;
     let segmentationRunning = false;
 
@@ -130,43 +171,21 @@ title: "RADIO"
 
     const fragmentShader = `
         uniform sampler2D u_videoTexture;
+        uniform sampler2D u_charTexture;
         uniform float u_audioBass;
         uniform vec2 u_resolution;
         uniform float u_exposure;
+        uniform float u_contrast;
+        uniform float u_glowStrength;
         uniform float u_time;
+        uniform float u_videoAspect;
+        uniform float u_mirrorX;
         
         varying vec2 vUv;
-        
-        // --- Kumpulan Bentuk ASCII Prosedural ---
-        
-        // Step 0: Titik (.)
-        float drawDot(vec2 cxy) {
-            return step(length(cxy), 0.2);
-        }
-        
-        // Step 1: Tanda Tambah (+)
-        float drawCross(vec2 cxy) {
-            float thickness = 0.15;
-            float h = step(abs(cxy.y), thickness) * step(abs(cxy.x), 0.7);
-            float v = step(abs(cxy.x), thickness) * step(abs(cxy.y), 0.7);
-            return max(h, v);
-        }
-        
-        // Step 2: Kotak Berlubang (O atau #)
-        float drawHollowBox(vec2 cxy) {
-            float outer = step(abs(cxy.x), 0.7) * step(abs(cxy.y), 0.7);
-            float inner = step(abs(cxy.x), 0.4) * step(abs(cxy.y), 0.4);
-            return outer - inner;
-        }
-        
-        // Step 3: Kotak Solid (█)
-        float drawSolidBox(vec2 cxy) {
-            return step(abs(cxy.x), 0.8) * step(abs(cxy.y), 0.8);
-        }
 
         void main() {
-            // Ukuran per karakter ASCII (dalam pixel)
-            float cellSize = 9.0; 
+            // Ukuran per karakter ASCII (dalam pixel) digedein
+            float cellSize = 14.0; 
             
             // Hitung jumlah kolom & baris berdasarkan resolusi layar
             vec2 grid = floor(u_resolution / cellSize);
@@ -174,12 +193,12 @@ title: "RADIO"
             // UV yang di-pixelate per kotak grid
             vec2 gridUv = floor(vUv * grid) / grid;
             
-            // Mirror horizontal karena ini kamera depan
-            gridUv.x = 1.0 - gridUv.x;
+            // Mirror horizontal (aktif untuk webcam)
+            gridUv.x = abs(u_mirrorX - gridUv.x);
             
             // Object-fit: cover correction untuk video
             float screenAspect = u_resolution.x / u_resolution.y;
-            float videoAspect = 640.0 / 480.0;
+            float videoAspect = u_videoAspect;
             
             vec2 sampleUv = gridUv + (0.5 / grid); // Ambil tengah kotak
             if (screenAspect > videoAspect) {
@@ -192,8 +211,8 @@ title: "RADIO"
                 sampleUv.x = (sampleUv.x - 0.5) * scale + 0.5;
             }
             
-            // UV lokal di dalam satu kotak grid (dari -1.0 sampai 1.0)
-            vec2 localUv = fract(vUv * grid) * 2.0 - 1.0;
+            // UV lokal di dalam satu kotak grid (dari 0.0 sampai 1.0)
+            vec2 localUv = fract(vUv * grid);
             
             // Ambil warna video dari sampleUv yang sudah dikoreksi
             vec4 texColor = texture2D(u_videoTexture, sampleUv);
@@ -201,39 +220,45 @@ title: "RADIO"
             
             // Auto Exposure & Contrast
             rawBrightness *= u_exposure;
-            float videoContrast = 1.6;
+            float videoContrast = u_contrast;
             rawBrightness = (rawBrightness - 0.5) * videoContrast + 0.5;
             rawBrightness = clamp(rawBrightness, 0.0, 1.0);
             
-            // Background Mask: Hanya bereaksi kalau ini bukan background pekat
-            float bgMask = smoothstep(0.01, 0.1, rawBrightness);
-            
-            float shape = 0.0;
-            
-            // 4 Tingkatan ASCII berdasarkan Brightness Murni
+            // Tentukan indeks karakter: 0 (Dark), 1 (Mid), 2 (Light)
+            float charIndex = 0.0;
             if (rawBrightness < 0.25) {
-                shape = drawDot(localUv);        // Background / Gelap = Titik Statis
-            } else if (rawBrightness < 0.5) {
-                // SHADOW TIER (Area Gelap)
-                // Kalau ada bass nendang, karakternya ganti jadi Midtone (O)
-                shape = (u_audioBass > 0.2) ? drawHollowBox(localUv) : drawCross(localUv);
-            } else if (rawBrightness < 0.75) {
-                shape = drawHollowBox(localUv);  // Midtone = Kotak Bolong (O)
+                charIndex = 0.0;
+            } else if (rawBrightness < 0.6) {
+                // Bereaksi ke bass: jika bass tinggi, ganti ke Light char
+                charIndex = (u_audioBass > 0.2 * (2.0 - u_glowStrength)) ? 2.0 : 1.0;
             } else {
-                shape = drawSolidBox(localUv);   // Highlight / Putih = Kotak Solid (█)
+                charIndex = 2.0;
             }
+            
+            // Map UV lokal ke posisi karakter di tekstur (lebar 96px, 3 karakter = 32px masing-masing, atau 1/3 dari lebar)
+            vec2 charUv = vec2((localUv.x + charIndex) / 3.0, 1.0 - localUv.y);
+            float shape = texture2D(u_charTexture, charUv).r;
             
             // Warna Hijau Tandang Sangar
-            vec3 asciiColor = vec3(0.8, 1.0, 0.0);
+            vec3 tandangGreen = vec3(0.8, 1.0, 0.0);
             
-            // Redupkan titik background agar tidak mendominasi foreground
+            // Base color dari bentuk karakter
+            vec3 finalColor = tandangGreen * shape;
+            
+            // Redupkan bagian background
             if (rawBrightness < 0.25) {
-                asciiColor *= 0.3;
+                finalColor *= 0.3;
             }
             
-            if (shape < 0.1) discard; // Double check untuk buang pixel kosong
+            // Reactivity Glow: Bikin seluruh kotak nyala hijau (nge-block) ngikutin bass & brightness
+            if (u_audioBass > 0.05 && rawBrightness > 0.1) {
+                float cellGlow = u_audioBass * u_glowStrength * rawBrightness;
+                finalColor += tandangGreen * cellGlow;
+            }
             
-            gl_FragColor = vec4(asciiColor * shape, 1.0);
+            if (length(finalColor) < 0.05) discard; 
+            
+            gl_FragColor = vec4(finalColor, 1.0);
         }
     `;
     
@@ -243,9 +268,69 @@ title: "RADIO"
     thumbCanvas.height = 16;
     const thumbCtx = thumbCanvas.getContext('2d', { willReadFrequently: true });
     let currentExposure = 1.0;
+    
+    // --- Generator Texture Teks ---
+    let charTextureCanvas = document.createElement('canvas');
+    charTextureCanvas.width = 96; 
+    charTextureCanvas.height = 32;
+    let charCtx = charTextureCanvas.getContext('2d', { willReadFrequently: true });
+    let charTexture = new THREE.CanvasTexture(charTextureCanvas);
+    charTexture.minFilter = THREE.NearestFilter;
+    charTexture.magFilter = THREE.NearestFilter;
+    
+    function updateCharAtlas() {
+        charCtx.fillStyle = 'black';
+        charCtx.fillRect(0, 0, 96, 32);
+        
+        charCtx.fillStyle = 'white';
+        charCtx.font = 'bold 24px monospace';
+        charCtx.textAlign = 'center';
+        charCtx.textBaseline = 'middle';
+        
+        let cDark = document.getElementById('ctrl-char-dark').value || '.';
+        let cMid = document.getElementById('ctrl-char-mid').value || '+';
+        let cLight = document.getElementById('ctrl-char-light').value || '#';
+        
+        charCtx.fillText(cDark, 16, 16); 
+        charCtx.fillText(cMid, 48, 16);  
+        charCtx.fillText(cLight, 80, 16); 
+        
+        charTexture.needsUpdate = true;
+    }
+    updateCharAtlas(); // Init first time
+    
+    // --- Bind UI Controls ---
+    document.getElementById('ctrl-exposure').addEventListener('input', (e) => {
+        document.getElementById('val-exposure').innerText = parseFloat(e.target.value).toFixed(1);
+    });
+    
+    document.getElementById('ctrl-contrast').addEventListener('input', (e) => {
+        let val = parseFloat(e.target.value);
+        document.getElementById('val-contrast').innerText = val.toFixed(2);
+        if(particles) particles.material.uniforms.u_contrast.value = val;
+    });
+    
+    document.getElementById('ctrl-glow').addEventListener('input', (e) => {
+        let val = parseFloat(e.target.value);
+        document.getElementById('val-glow').innerText = val.toFixed(1);
+        if(particles) particles.material.uniforms.u_glowStrength.value = val;
+    });
+    
+    ['ctrl-char-dark', 'ctrl-char-mid', 'ctrl-char-light'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updateCharAtlas);
+    });
 
     function onResults(results) {
         if (!segmentationRunning) return;
+        
+        // Sesuaikan ukuran canvas dengan resolusi asli webcam biar nggak gepeng
+        if (maskCanvas.width !== results.image.width || maskCanvas.height !== results.image.height) {
+            maskCanvas.width = results.image.width;
+            maskCanvas.height = results.image.height;
+            if (particles && particles.material) {
+                particles.material.uniforms.u_videoAspect.value = maskCanvas.width / maskCanvas.height;
+            }
+        }
         
         maskCtx.save();
         maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
@@ -281,12 +366,104 @@ title: "RADIO"
             let targetExposure = 0.55 / Math.max(avg, 0.1); 
             targetExposure = Math.min(Math.max(targetExposure, 0.5), 3.0);
             currentExposure += (targetExposure - currentExposure) * 0.05; 
-            particles.material.uniforms.u_exposure.value = currentExposure;
+            
+            // Manual multiplier
+            let manualExp = parseFloat(document.getElementById('ctrl-exposure').value);
+            particles.material.uniforms.u_exposure.value = currentExposure * manualExp;
         }
     }
+    
+    // --- Inisialisasi Audio dan WebGL Otomatis ---
+    function initBaseSystem() {
+        // Init Audio Context for Bass Detection (Might be suspended initially by browser)
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioContext.createMediaElementSource(audio);
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-    async function init() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x111111);
+        
+        camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+        renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // Texture 1: Video Latar Belakang (Golden Snake)
+        videoTexture = new THREE.VideoTexture(bgVideo);
+        videoTexture.minFilter = THREE.LinearFilter;
+        videoTexture.magFilter = THREE.LinearFilter;
+
+        // Texture 2: Webcam Mask (untuk nanti)
+        canvasTexture = new THREE.CanvasTexture(maskCanvas);
+        canvasTexture.minFilter = THREE.NearestFilter;
+        canvasTexture.magFilter = THREE.NearestFilter;
+
+        const geometry = new THREE.PlaneGeometry(2, 2);
+
+        let material = new THREE.ShaderMaterial({
+            vertexShader,
+            fragmentShader,
+            uniforms: {
+                u_videoTexture: { value: videoTexture },
+                u_charTexture: { value: charTexture },
+                u_audioBass: { value: 0.0 },
+                u_resolution: { value: new THREE.Vector2(container.clientWidth * Math.min(window.devicePixelRatio, 2), container.clientHeight * Math.min(window.devicePixelRatio, 2)) },
+                u_exposure: { value: 1.0 },
+                u_contrast: { value: parseFloat(document.getElementById('ctrl-contrast').value) },
+                u_glowStrength: { value: parseFloat(document.getElementById('ctrl-glow').value) },
+                u_time: { value: 0.0 },
+                u_videoAspect: { value: 640/480 },
+                u_mirrorX: { value: 0.0 }
+            }
+        });
+
+        particles = new THREE.Mesh(geometry, material);
+        scene.add(particles);
+
+        window.addEventListener('resize', () => {
+            if (camera && renderer && container) {
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                if (particles && particles.material && particles.material.uniforms.u_resolution) {
+                    particles.material.uniforms.u_resolution.value.set(
+                        container.clientWidth * Math.min(window.devicePixelRatio, 2),
+                        container.clientHeight * Math.min(window.devicePixelRatio, 2)
+                    );
+                }
+            }
+        });
+
+        // Update aspect ratio saat metadata video ular ke-load
+        bgVideo.addEventListener('loadedmetadata', () => {
+            if (particles && particles.material) {
+                particles.material.uniforms.u_videoAspect.value = bgVideo.videoWidth / bgVideo.videoHeight;
+            }
+        });
+
+        // Paksa play video kalau browser ngeblok
+        bgVideo.play().catch(e => console.log("Bg video play error", e));
+        audio.play().catch(e => console.log("Audio play error", e));
+        
+        // Tangkap klik sembarang buat resume audio context kalau suspended
+        document.body.addEventListener('click', () => {
+            if(audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            if(audio.paused) audio.play();
+        }, { once: true });
+
+        animate();
+    }
+
+    async function exploreVisualizer() {
         startBtn.classList.add('hidden');
+        document.getElementById('visualizer-controls').classList.remove('hidden');
+        document.getElementById('toggle-play-btn').classList.remove('hidden');
         loadingContainer.classList.remove('hidden');
         loadingContainer.classList.add('flex');
 
@@ -328,84 +505,74 @@ title: "RADIO"
             progressBar.style.width = '100%';
             progressText.innerText = '100% - SYSTEM READY';
 
+            // SWAP TEXTURE TO WEBCAM
+            if (particles && particles.material) {
+                particles.material.uniforms.u_videoTexture.value = canvasTexture;
+                // Switch exposure ke default webcam auto-exposure
+                currentExposure = 1.0; 
+                // Set aspect ratio ke format webcam dan aktifin mirror!
+                particles.material.uniforms.u_videoAspect.value = 640.0 / 480.0;
+                particles.material.uniforms.u_mirrorX.value = 1.0;
+            }
+
         } catch (err) {
             clearInterval(progressInterval);
             console.error("Camera/MediaPipe error", err);
-            alert("Akses kamera ditolak atau AI gagal dimuat.");
+            alert("Error: " + err.message + "\n\nStack: " + err.stack);
             startBtn.classList.remove('hidden');
             loadingContainer.classList.add('hidden');
             loadingContainer.classList.remove('flex');
             return;
         }
 
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const source = audioContext.createMediaElementSource(audio);
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-        scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x111111);
-        
-        // Orthographic Camera for Fullscreen Shader
-        camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-
-        renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
-
-        canvasTexture = new THREE.CanvasTexture(maskCanvas);
-        canvasTexture.minFilter = THREE.NearestFilter;
-        canvasTexture.magFilter = THREE.NearestFilter;
-
-        const geometry = new THREE.PlaneGeometry(2, 2);
-
-        const material = new THREE.ShaderMaterial({
-            uniforms: {
-                u_videoTexture: { value: canvasTexture },
-                u_audioBass: { value: 0.0 },
-                u_resolution: { value: new THREE.Vector2(container.clientWidth * Math.min(window.devicePixelRatio, 2), container.clientHeight * Math.min(window.devicePixelRatio, 2)) },
-                u_exposure: { value: 1.0 },
-                u_time: { value: 0.0 }
-            },
-            vertexShader: vertexShader,
-            fragmentShader: fragmentShader,
-            transparent: false,
-            depthWrite: false
-        });
-
-        particles = new THREE.Mesh(geometry, material);
-        scene.add(particles);
-
-        window.addEventListener('resize', () => {
-            if (camera && renderer && container) {
-                renderer.setSize(container.clientWidth, container.clientHeight);
-                if (particles && particles.material && particles.material.uniforms.u_resolution) {
-                    particles.material.uniforms.u_resolution.value.set(
-                        container.clientWidth * Math.min(window.devicePixelRatio, 2),
-                        container.clientHeight * Math.min(window.devicePixelRatio, 2)
-                    );
-                }
-            }
-        });
-
-        if(audioContext.state === 'suspended') {
-            audioContext.resume();
-        }
-        audio.play().catch(e => console.log("Audio play error", e));
-        
         setTimeout(() => {
             radioUi.style.opacity = '0';
             setTimeout(() => {
                 radioUi.classList.add('hidden');
                 playingUi.classList.remove('hidden');
+                stopWebcamBtn.classList.remove('hidden'); // Show stop button
+                stopWebcamBtn.innerText = '[ OFF WEBCAM ]';
+                stopWebcamBtn.classList.remove('text-[#ccff00]', 'border-[#ccff00]');
+                stopWebcamBtn.classList.add('bg-red-600', 'text-white', 'border-red-600');
+                stopWebcamBtn.classList.remove('bg-black');
             }, 500);
         }, 500);
+    }
 
-        animate();
+    function toggleWebcam() {
+        if (segmentationRunning) {
+            // MATIKAN WEBCAM
+            segmentationRunning = false;
+            
+            // Matikan semua track kamera
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+
+            // Kembalikan tekstur ke video ular
+            if (particles && particles.material) {
+                particles.material.uniforms.u_videoTexture.value = videoTexture;
+                particles.material.uniforms.u_videoAspect.value = bgVideo.videoWidth / bgVideo.videoHeight;
+                particles.material.uniforms.u_mirrorX.value = 0.0;
+                particles.material.uniforms.u_exposure.value = 1.0; // Reset auto-exposure
+            }
+            
+            // Pastikan video ularnya tetep jalan (browser kadang nge-pause video hidden)
+            bgVideo.play().catch(e => console.log("Bg video resume error", e));
+
+            // Ubah tombol jadi ON WEBCAM
+            stopWebcamBtn.innerText = '[ ON WEBCAM ]';
+            stopWebcamBtn.classList.remove('bg-red-600', 'text-white', 'border-red-600');
+            stopWebcamBtn.classList.add('bg-[#ccff00]', 'text-black', 'border-[#ccff00]');
+            stopWebcamBtn.classList.remove('hover:text-red-600');
+            stopWebcamBtn.classList.add('hover:text-[#ccff00]');
+        } else {
+            // NYALAKAN WEBCAM LAGI
+            // Ubah text sementara loading
+            stopWebcamBtn.innerText = '[ LOADING... ]';
+            exploreVisualizer(); // Panggil fungsi utama lagi (nanti ngilangin radioUi kalau muncul)
+        }
     }
 
     const clock = new THREE.Clock();
@@ -416,26 +583,28 @@ title: "RADIO"
         
         const elapsedTime = clock.getElapsedTime();
         
-        // Ambil data BASS dengan logic Peak Detection
-        analyser.getByteFrequencyData(dataArray);
-        let bassMax = 0;
-        // Hanya cek 4 bin pertama (frekuensi Sub-Bass & Kick Drum)
-        for (let i = 0; i < 4; i++) {
-            if (dataArray[i] > bassMax) bassMax = dataArray[i];
-        }
-        
-        // Threshold: Hanya nendang kalau audionya cukup keras (lebih dari 150)
-        let bassHit = 0;
-        if (bassMax > 150) {
-            bassHit = (bassMax - 150) / (255 - 150); // Skala dari 0.0 sampai 1.0
-        }
-        
-        // Smooth Decay: Naik instan saat bass mukul, tapi turun pelan-pelan
-        if (bassHit > currentBass) {
-            currentBass = bassHit; // Attack seketika
-        } else {
-            currentBass -= 0.08; // Decay
-            if (currentBass < 0) currentBass = 0;
+        if (analyser && dataArray) {
+            // Ambil data BASS dengan logic Peak Detection
+            analyser.getByteFrequencyData(dataArray);
+            let bassMax = 0;
+            // Hanya cek 4 bin pertama (frekuensi Sub-Bass & Kick Drum)
+            for (let i = 0; i < 4; i++) {
+                if (dataArray[i] > bassMax) bassMax = dataArray[i];
+            }
+            
+            // Threshold: Hanya nendang kalau audionya cukup keras (lebih dari 150)
+            let bassHit = 0;
+            if (bassMax > 150) {
+                bassHit = (bassMax - 150) / (255 - 150); // Skala dari 0.0 sampai 1.0
+            }
+            
+            // Smooth Decay: Naik instan saat bass mukul, tapi turun pelan-pelan
+            if (bassHit > currentBass) {
+                currentBass = bassHit; // Attack seketika
+            } else {
+                currentBass -= 0.08; // Decay
+                if (currentBass < 0) currentBass = 0;
+            }
         }
 
         if (particles && particles.material) {
@@ -446,9 +615,13 @@ title: "RADIO"
         renderer.render(scene, camera);
     }
 
-    startBtn.addEventListener('click', init);
+    startBtn.addEventListener('click', exploreVisualizer);
+    stopWebcamBtn.addEventListener('click', toggleWebcam);
+    
+    // Start base system on load
+    initBaseSystem();
 
-    // Play/Pause Toggle Logic
+    // Toggle Play/Pause UI
     togglePlayBtn.addEventListener('click', () => {
         if (isPlaying) {
             audio.pause();
