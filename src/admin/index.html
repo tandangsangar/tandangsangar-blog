@@ -70,7 +70,7 @@
     <div x-show="session" x-cloak class="flex flex-col md:flex-row min-h-screen">
         
         <!-- SIDEBAR -->
-        <aside class="w-full md:w-64 bg-black text-white brutal-border border-r-0 md:border-b-0 md:min-h-screen flex flex-col z-20 sticky top-0">
+        <aside class="w-full md:w-64 flex-shrink-0 bg-black text-white brutal-border border-r-0 md:border-b-0 md:min-h-screen flex flex-col z-20 sticky top-0">
             <div class="p-6 border-b-2 border-white">
                 <h1 class="text-3xl font-header font-black text-[#ccff00] uppercase">Admin Area</h1>
             </div>
@@ -228,7 +228,7 @@
                     <button @click="currentView = 'posts'" class="text-sm underline font-bold uppercase hover:text-[#ccff00]">Batal</button>
                 </div>
                 
-                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                <div class="flex flex-col lg:flex-row gap-8 items-stretch">
                 <form class="bg-white p-6 md:p-8 brutal-border brutal-shadow flex flex-col gap-6 w-full lg:w-1/2">
                     
                     <div class="flex flex-col md:flex-row gap-6">
@@ -293,10 +293,10 @@
                 </form>
 
                 <!-- LIVE PREVIEW PANE -->
-                <div class="w-full lg:w-1/2 bg-white brutal-border brutal-shadow relative overflow-hidden flex flex-col h-auto sticky top-4">
-                    <div class="bg-black text-white p-2 text-xs font-bold uppercase text-center border-b-2 border-black">Live Preview</div>
+                <div class="w-full lg:w-1/2 bg-white brutal-border brutal-shadow relative overflow-hidden flex flex-col">
+                    <div class="bg-black text-white p-2 text-xs font-bold uppercase text-center border-b-2 border-black sticky top-0 z-10">Live Preview</div>
                     
-                    <div class="p-6 md:p-8 flex-grow overflow-y-auto max-h-[80vh]">
+                    <div class="p-6 md:p-8 flex-grow overflow-y-auto" style="max-height: calc(100vh - 200px);">
                         <div class="mb-8 border-b-2 border-black pb-8">
                             <span class="bg-black text-[#ccff00] px-2 py-1 text-xs font-bold uppercase border border-black inline-block mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]" x-text="form.category"></span>
                             <h1 class="font-header text-5xl uppercase leading-[0.85] tracking-tight break-words mb-4" x-text="form.title || 'Judul Artikel'"></h1>
@@ -355,8 +355,9 @@
                                         <span x-show="user.role === 'author'" class="bg-gray-200 text-gray-600 px-2 py-1 font-bold uppercase border border-black text-xs">Author</span>
                                     </td>
                                     <td class="p-4">
-                                        <button x-show="user.role === 'author'" @click="updateUserRole(user.id, 'admin')" class="bg-black text-white px-3 py-1 font-bold text-xs uppercase hover:bg-[#ccff00] hover:text-black border border-black transition-colors">Jadikan Admin</button>
+                                        <button x-show="user.role === 'author' && user.id !== session.user.id" @click="updateUserRole(user.id, 'admin')" class="bg-black text-white px-3 py-1 font-bold text-xs uppercase hover:bg-[#ccff00] hover:text-black border border-black transition-colors">Jadikan Admin</button>
                                         <button x-show="user.role === 'admin' && user.id !== session.user.id" @click="updateUserRole(user.id, 'author')" class="bg-white text-black px-3 py-1 font-bold text-xs uppercase hover:bg-gray-200 border border-black transition-colors">Turunkan ke Author</button>
+                                        <span x-show="user.id === session.user.id" class="text-xs text-gray-400 italic">It's You</span>
                                     </td>
                                 </tr>
                             </template>
@@ -372,7 +373,54 @@
                 </div>
                 
                 <form @submit.prevent="saveSettings" class="bg-white p-6 md:p-8 brutal-border brutal-shadow flex flex-col gap-6 max-w-3xl">
-                    <h3 class="font-header text-2xl uppercase border-b-2 border-black pb-2 mb-4">Informasi Website & Footer</h3>
+                    
+                    <h3 class="font-header text-2xl uppercase border-b-2 border-black pb-2 mb-4">Landing Page (Home)</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase mb-2">Teks Hero (Solid)</label>
+                            <input type="text" x-model="settingsForm.global_hero_text_solid" class="w-full border-2 border-black p-2 font-header text-xl uppercase focus:outline-none focus:border-[#ccff00]">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase mb-2">Teks Hero (Outline)</label>
+                            <input type="text" x-model="settingsForm.global_hero_text_outline" class="w-full border-2 border-black p-2 font-header text-xl uppercase focus:outline-none focus:border-[#ccff00]">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-2">Teks Marquee (Berjalan) Atas</label>
+                        <input type="text" x-model="settingsForm.global_marquee_top" class="w-full border-2 border-black p-2 font-mono text-sm focus:outline-none focus:border-[#ccff00]">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-2">Teks Marquee (Berjalan) Bawah</label>
+                        <input type="text" x-model="settingsForm.global_marquee_bottom" class="w-full border-2 border-black p-2 font-mono text-sm focus:outline-none focus:border-[#ccff00]">
+                    </div>
+                    
+                    <div class="bg-gray-100 p-4 border-2 border-black mt-2">
+                        <label class="block text-xs font-bold uppercase mb-4 border-b border-black pb-2">Bagian Manifesto</label>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Judul</label>
+                                <input type="text" x-model="settingsForm.global_manifesto_title" class="w-full border-2 border-black p-2 font-header uppercase focus:outline-none focus:border-[#ccff00]">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Deskripsi</label>
+                                <textarea x-model="settingsForm.global_manifesto_text" rows="2" class="w-full border-2 border-black p-2 font-mono text-xs focus:outline-none focus:border-[#ccff00]"></textarea>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="flex-1">
+                                    <label class="block text-xs font-bold uppercase mb-1">Teks Tombol</label>
+                                    <input type="text" x-model="settingsForm.global_manifesto_btn" class="w-full border-2 border-black p-2 font-bold focus:outline-none focus:border-[#ccff00]">
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-xs font-bold uppercase mb-1">Link Tombol</label>
+                                    <input type="text" x-model="settingsForm.global_manifesto_link" class="w-full border-2 border-black p-2 font-mono text-xs focus:outline-none focus:border-[#ccff00]">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="font-header text-2xl uppercase border-b-2 border-black pb-2 mt-8 mb-4">Informasi Website & Footer (About)</h3>
                     
                     <div>
                         <label class="block text-xs font-bold uppercase mb-2">Headline About/Footer</label>
@@ -446,7 +494,15 @@
                     about_description: '',
                     social_instagram: '',
                     social_youtube: '',
-                    social_twitter: ''
+                    social_twitter: '',
+                    global_hero_text_solid: '',
+                    global_hero_text_outline: '',
+                    global_marquee_top: '',
+                    global_marquee_bottom: '',
+                    global_manifesto_title: '',
+                    global_manifesto_text: '',
+                    global_manifesto_btn: '',
+                    global_manifesto_link: ''
                 },
 
                 editingPostId: null,
@@ -645,7 +701,15 @@
                             about_description: settingsMap.about_description || '',
                             social_instagram: settingsMap.social_instagram || '',
                             social_youtube: settingsMap.social_youtube || '',
-                            social_twitter: settingsMap.social_twitter || ''
+                            social_twitter: settingsMap.social_twitter || '',
+                            global_hero_text_solid: settingsMap.global_hero_text_solid || '',
+                            global_hero_text_outline: settingsMap.global_hero_text_outline || '',
+                            global_marquee_top: settingsMap.global_marquee_top || '',
+                            global_marquee_bottom: settingsMap.global_marquee_bottom || '',
+                            global_manifesto_title: settingsMap.global_manifesto_title || '',
+                            global_manifesto_text: settingsMap.global_manifesto_text || '',
+                            global_manifesto_btn: settingsMap.global_manifesto_btn || '',
+                            global_manifesto_link: settingsMap.global_manifesto_link || ''
                         };
                     }
                 },
@@ -653,13 +717,10 @@
                 async saveSettings() {
                     this.isSavingSettings = true;
                     try {
-                        const settingsData = [
-                            { key: 'about_headline', value: this.settingsForm.about_headline },
-                            { key: 'about_description', value: this.settingsForm.about_description },
-                            { key: 'social_instagram', value: this.settingsForm.social_instagram },
-                            { key: 'social_youtube', value: this.settingsForm.social_youtube },
-                            { key: 'social_twitter', value: this.settingsForm.social_twitter }
-                        ];
+                        const settingsData = Object.keys(this.settingsForm).map(key => ({
+                            key: key,
+                            value: this.settingsForm[key]
+                        }));
                         
                         // Upsert settings
                         const { error } = await supabaseClient.from('settings').upsert(settingsData, { onConflict: 'key' });
