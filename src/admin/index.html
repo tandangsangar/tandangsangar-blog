@@ -911,7 +911,8 @@
                         const { error } = await supabaseClient.from('settings').upsert(settingsData, { onConflict: 'key' });
                         if (error) throw error;
                         
-                        alert("Global Settings Berhasil Disimpan!");
+                        fetch('https://api.netlify.com/build_hooks/6a43cf754538ac6bc95ddaeb', { method: 'POST', mode: 'no-cors' }).catch(console.error);
+                        alert("Settings berhasil disimpen! Website lagi di-build otomatis sama Netlify, tunggu beberapa menit biar perubahannya nongol di web.");
                     } catch (error) {
                         console.error(error);
                         alert("Error saving settings: " + error.message);
@@ -955,7 +956,8 @@
 
                         if (res.error) throw res.error;
 
-                        alert("Artikel Tersimpan!");
+                        fetch('https://api.netlify.com/build_hooks/6a43cf754538ac6bc95ddaeb', { method: 'POST', mode: 'no-cors' }).catch(console.error);
+                        alert("Artikel Tersimpan! Website lagi di-build ulang otomatis sama Netlify, tunggu 1-2 menit.");
                         this.fetchPosts();
                         this.currentView = 'posts';
                     } catch (error) {
