@@ -17,6 +17,13 @@
     <!-- Browser Image Compression -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
 
+    <!-- EasyMDE -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+
+    <!-- Marked (for Live Preview) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
         body { font-family: 'Space Mono', monospace; }
@@ -25,6 +32,23 @@
         .brutal-border { border: 3px solid black; }
         
         [x-cloak] { display: none !important; }
+
+        /* Article Content CSS for Live Preview */
+        .article-content h1, .article-content h2, .article-content h3, .article-content h4 { font-family: 'Oswald', sans-serif !important; text-transform: uppercase; font-weight: 700 !important; color: #000; margin-top: 2.5rem; margin-bottom: 1rem; line-height: 1.1; }
+        .article-content h1 { font-size: 2.5rem; }
+        .article-content h2 { font-size: 2rem; border-left: 5px solid #ccff00; padding-left: 10px; }
+        .article-content h3 { font-size: 1.75rem; }
+        .article-content ul { list-style-type: square; padding-left: 1.5rem; margin-bottom: 1.5rem; }
+        .article-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1.5rem; }
+        .article-content li { margin-bottom: 0.5rem; }
+        .article-content li::marker { color: #000; font-weight: bold; }
+        .article-content a { background-color: #ccff00; color: #000; text-decoration: none; padding: 0 4px; border: 1px solid #000; font-weight: bold; }
+        .article-content a:hover { background-color: #000; color: #ccff00; }
+        .article-content blockquote { border-left: 8px solid #000; background: #f0f0f0; padding: 1.5rem; margin: 2rem 0; font-family: 'Oswald', sans-serif; font-size: 1.5rem; text-transform: uppercase; }
+        
+        /* EasyMDE custom styling to fit Brutalism */
+        .editor-toolbar { border: 2px solid black !important; border-bottom: none !important; border-radius: 0 !important; }
+        .CodeMirror { border: 2px solid black !important; border-radius: 0 !important; font-family: 'Space Mono', monospace !important; }
     </style>
 </head>
 <body class="bg-[#f0f0f0] text-black min-h-screen" x-data="adminApp()">
@@ -58,15 +82,18 @@
                 <button @click="currentView = 'editor'; editingPostId = null; resetForm()" :class="currentView === 'editor' && !editingPostId ? 'bg-[#ccff00] text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
                     + Artikel Baru
                 </button>
+                <button @click="openProfile" :class="currentView === 'profile' ? 'bg-[#ccff00] text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
+                    Profil Saya
+                </button>
                 
                 <!-- Admin Only Views -->
                 <template x-if="userRole === 'admin'">
                     <div class="mt-8 pt-4 border-t-2 border-gray-700 flex flex-col gap-2">
                         <span class="text-xs text-gray-500 uppercase px-4 mb-1">Admin Controls</span>
-                        <button @click="currentView = 'users'" :class="currentView === 'users' ? 'bg-white text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
+                        <button @click="currentView = 'users'; fetchAllUsers()" :class="currentView === 'users' ? 'bg-white text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
                             Manage Authors
                         </button>
-                        <button @click="currentView = 'settings'" :class="currentView === 'settings' ? 'bg-white text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
+                        <button @click="currentView = 'settings'; fetchSettings()" :class="currentView === 'settings' ? 'bg-white text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
                             Global Settings
                         </button>
                     </div>
@@ -88,17 +115,52 @@
             </div>
         </aside>
 
+        <!-- ONBOARDING MODAL -->
+        <div x-show="showOnboarding" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 p-4">
+            <div class="bg-white p-8 md:p-12 brutal-border brutal-shadow max-w-lg w-full border-4 border-black">
+                <h2 class="text-3xl font-header font-black uppercase mb-4">Selamat Datang di Redaksi!</h2>
+                <p class="mb-6">Sebelum mulai nulis, pasang nama dan foto profil lu dulu biar nampang di artikel yang lu tulis.</p>
+                
+                <div class="flex flex-col gap-4 mb-8">
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-2">Nama Tampilan (Username)</label>
+                        <input type="text" x-model="profileForm.full_name" class="w-full border-2 border-black p-3 focus:outline-none focus:border-[#ccff00]">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-2">Foto Profil (Upload)</label>
+                        <input type="file" @change="handleProfileUpload" accept="image/*" class="w-full border-2 border-black p-2">
+                        <div x-show="profileForm.avatar_url" class="mt-4 w-24 h-24 rounded-full border-4 border-black overflow-hidden relative mx-auto bg-gray-100">
+                            <img :src="profileForm.avatar_url" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end gap-4 items-center">
+                    <button @click="showOnboarding = false" class="text-sm underline font-bold uppercase hover:text-gray-500">Skip, Nanti Aja</button>
+                    <button @click="saveProfile" class="bg-[#ccff00] text-black border-2 border-black px-6 py-3 font-bold uppercase hover:bg-black hover:text-[#ccff00] brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSavingProfile">
+                        <span x-text="isSavingProfile ? 'Menyimpan...' : 'Simpan Profil'"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- MAIN CONTENT AREA -->
-        <main class="flex-grow p-4 md:p-8 overflow-y-auto">
+        <main class="flex-grow p-4 md:p-8 overflow-y-auto relative z-10">
             
             <!-- VIEW: POSTS -->
             <div x-show="currentView === 'posts'">
-                <div class="flex justify-between items-center mb-8 border-b-4 border-black pb-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b-4 border-black pb-4 gap-4">
                     <h2 class="text-4xl font-header font-black uppercase">Semua Artikel</h2>
+                    
+                    <div class="flex gap-2">
+                        <button @click="postFilter = 'all'" :class="postFilter === 'all' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-200'" class="border-2 border-black px-4 py-1 font-bold text-sm uppercase transition-colors">Semua</button>
+                        <button @click="postFilter = 'published'" :class="postFilter === 'published' ? 'bg-[#ccff00] text-black' : 'bg-white text-black hover:bg-gray-200'" class="border-2 border-black px-4 py-1 font-bold text-sm uppercase transition-colors">Published</button>
+                        <button @click="postFilter = 'draft'" :class="postFilter === 'draft' ? 'bg-gray-300 text-black' : 'bg-white text-black hover:bg-gray-200'" class="border-2 border-black px-4 py-1 font-bold text-sm uppercase transition-colors">Drafts</button>
+                    </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <template x-for="post in posts" :key="post.id">
+                    <template x-for="post in posts.filter(p => postFilter === 'all' || p.status === postFilter)" :key="post.id">
                         <div class="bg-white brutal-border brutal-shadow flex flex-col group relative">
                             <!-- Status Badge -->
                             <div class="absolute top-2 left-2 z-10">
@@ -122,19 +184,52 @@
                         </div>
                     </template>
                 </div>
-                <div x-show="posts.length === 0" class="text-center py-12 text-gray-500 border-2 border-dashed border-gray-400">
+                <div x-show="posts.length === 0" class="text-center py-12 text-gray-500 border-2 border-dashed border-gray-400 font-bold uppercase text-xl">
                     Belum ada artikel. Mulai menulis.
+                </div>
+                <div x-show="posts.length > 0 && posts.filter(p => postFilter === 'all' || p.status === postFilter).length === 0" class="text-center py-12 text-gray-500 border-2 border-dashed border-gray-400 font-bold uppercase text-xl">
+                    Tidak ada artikel di tab ini.
                 </div>
             </div>
             
+            <!-- VIEW: PROFILE -->
+            <div x-show="currentView === 'profile'" x-cloak>
+                <div class="flex justify-between items-center mb-8 border-b-4 border-black pb-4">
+                    <h2 class="text-4xl font-header font-black uppercase">Profil Saya</h2>
+                </div>
+                <div class="bg-white p-6 md:p-8 brutal-border brutal-shadow flex flex-col gap-6 max-w-2xl">
+                    <div class="flex flex-col md:flex-row gap-8 items-center">
+                        <div class="w-32 h-32 bg-gray-200 rounded-full border-4 border-black overflow-hidden flex-shrink-0">
+                            <img :src="profileForm.avatar_url || 'https://via.placeholder.com/150'" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-grow w-full">
+                            <label class="block text-xs font-bold uppercase mb-2">Upload Foto Baru</label>
+                            <input type="file" @change="handleProfileUpload" accept="image/*" class="w-full border-2 border-black p-2 bg-gray-100">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-2">Nama Tampilan (Muncul di Artikel)</label>
+                        <input type="text" x-model="profileForm.full_name" class="w-full border-2 border-black p-3 font-bold uppercase focus:outline-none focus:border-[#ccff00]">
+                    </div>
+                    
+                    <div class="border-t-2 border-black pt-6 flex justify-end">
+                        <button @click="saveProfile" class="bg-black text-white border-2 border-black px-8 py-3 font-bold uppercase hover:bg-[#ccff00] hover:text-black brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSavingProfile">
+                            <span x-text="isSavingProfile ? 'Menyimpan...' : 'Update Profil'"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- VIEW: EDITOR -->
-            <div x-show="currentView === 'editor'" x-cloak>
+            <div x-show="currentView === 'editor'" x-cloak class="h-full flex flex-col">
                 <div class="flex justify-between items-center mb-8 border-b-4 border-black pb-4">
                     <h2 class="text-4xl font-header font-black uppercase" x-text="editingPostId ? 'Edit Artikel' : 'Artikel Baru'"></h2>
                     <button @click="currentView = 'posts'" class="text-sm underline font-bold uppercase hover:text-[#ccff00]">Batal</button>
                 </div>
                 
-                <form @submit.prevent="savePost" class="bg-white p-6 md:p-8 brutal-border brutal-shadow flex flex-col gap-6 max-w-4xl">
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                <form class="bg-white p-6 md:p-8 brutal-border brutal-shadow flex flex-col gap-6 w-full lg:w-1/2">
                     
                     <div class="flex flex-col md:flex-row gap-6">
                         <div class="flex-1 space-y-6">
@@ -159,13 +254,6 @@
                                     <option value="EVENTS">EVENTS</option>
                                 </select>
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase mb-2">Status</label>
-                                <select x-model="form.status" class="w-full border-2 border-black p-2 focus:outline-none">
-                                    <option value="draft">DRAFT</option>
-                                    <option value="published">PUBLISHED</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
                     
@@ -184,16 +272,138 @@
 
                     <div class="border-t-2 border-black pt-6">
                         <label class="block text-xs font-bold uppercase mb-2">Body (Markdown/HTML)</label>
-                        <!-- Basic textarea for now, can be upgraded to EasyMDE later -->
-                        <textarea x-model="form.body" rows="15" class="w-full border-2 border-black p-4 font-mono text-sm focus:outline-none" placeholder="Use Markdown or HTML..."></textarea>
+                        <div x-init="
+                            const mde = new EasyMDE({ element: $refs.mde, spellChecker: false, status: false });
+                            mde.codemirror.on('change', () => { form.body = mde.value() });
+                            $watch('currentView', val => { if(val === 'editor') setTimeout(() => mde.value(form.body || ''), 100) });
+                        ">
+                            <textarea x-ref="mde" rows="15" class="w-full border-2 border-black p-4 font-mono text-sm focus:outline-none" placeholder="Mulai nulis..."></textarea>
+                        </div>
                     </div>
 
-                    <div class="border-t-2 border-black pt-6 flex justify-end">
-                        <button type="submit" class="bg-[#ccff00] text-black border-2 border-black px-8 py-3 font-bold uppercase hover:bg-black hover:text-[#ccff00] brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSaving">
-                            <span x-text="isSaving ? 'MENYIMPAN...' : 'SIMPAN ARTIKEL'"></span>
+                    <div class="border-t-2 border-black pt-6 flex justify-end gap-3 flex-wrap">
+                        <button type="button" @click="savePost('draft')" class="bg-gray-300 text-black border-2 border-black px-6 py-3 font-bold uppercase hover:bg-black hover:text-white brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSaving">
+                            <span x-text="isSaving ? 'Menyimpan...' : 'Simpan Draf'"></span>
+                        </button>
+                        <button type="button" @click="savePost('published')" class="bg-[#ccff00] text-black border-2 border-black px-6 py-3 font-bold uppercase hover:bg-black hover:text-[#ccff00] brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSaving">
+                            <span x-text="isSaving ? 'Menyimpan...' : 'Publish Sekarang'"></span>
                         </button>
                     </div>
 
+                </form>
+
+                <!-- LIVE PREVIEW PANE -->
+                <div class="w-full lg:w-1/2 bg-white brutal-border brutal-shadow relative overflow-hidden flex flex-col h-auto sticky top-4">
+                    <div class="bg-black text-white p-2 text-xs font-bold uppercase text-center border-b-2 border-black">Live Preview</div>
+                    
+                    <div class="p-6 md:p-8 flex-grow overflow-y-auto max-h-[80vh]">
+                        <div class="mb-8 border-b-2 border-black pb-8">
+                            <span class="bg-black text-[#ccff00] px-2 py-1 text-xs font-bold uppercase border border-black inline-block mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]" x-text="form.category"></span>
+                            <h1 class="font-header text-5xl uppercase leading-[0.85] tracking-tight break-words mb-4" x-text="form.title || 'Judul Artikel'"></h1>
+                            
+                            <div class="flex items-center gap-3 mt-4">
+                                <img :src="userProfile?.avatar_url || 'https://via.placeholder.com/40'" class="w-10 h-10 bg-black rounded-full border-2 border-[#ccff00] overflow-hidden object-cover">
+                                <span class="font-header text-xl uppercase" x-text="userProfile?.full_name || 'Author Name'"></span>
+                            </div>
+                        </div>
+
+                        <div class="w-full aspect-video border-2 border-black overflow-hidden relative mb-8 bg-gray-100">
+                            <template x-if="form.cover_image">
+                                <img :src="form.cover_image" class="w-full h-full object-cover">
+                            </template>
+                            <template x-if="!form.cover_image">
+                                <div class="w-full h-full flex items-center justify-center text-gray-400 font-mono text-xs">No Cover Image</div>
+                            </template>
+                        </div>
+
+                        <p class="text-xl font-serif italic leading-relaxed mb-8 border-l-4 border-[#ccff00] pl-6 py-2 text-gray-800" x-text="form.excerpt || 'Excerpt artikel akan muncul di sini...'"></p>
+
+                        <div class="article-content font-serif text-lg leading-8 text-gray-800" x-html="parsedBody()">
+                        </div>
+                    </div>
+                </div>
+                
+                </div> <!-- End of flex row -->
+            </div>
+
+            <!-- VIEW: MANAGE AUTHORS -->
+            <div x-show="currentView === 'users'" x-cloak>
+                <div class="flex justify-between items-center mb-8 border-b-4 border-black pb-4">
+                    <h2 class="text-4xl font-header font-black uppercase">Manage Authors</h2>
+                </div>
+                
+                <div class="bg-white p-6 md:p-8 brutal-border brutal-shadow overflow-x-auto">
+                    <table class="w-full text-left font-mono text-sm">
+                        <thead class="bg-black text-[#ccff00]">
+                            <tr>
+                                <th class="p-4 border-r border-gray-800">Nama Tampilan</th>
+                                <th class="p-4 border-r border-gray-800">ID Pengguna</th>
+                                <th class="p-4 border-r border-gray-800">Role</th>
+                                <th class="p-4">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="user in allUsers" :key="user.id">
+                                <tr class="border-b border-black hover:bg-gray-100">
+                                    <td class="p-4 border-r border-black flex items-center gap-3">
+                                        <img :src="user.avatar_url || 'https://via.placeholder.com/40'" class="w-8 h-8 rounded-full border border-black object-cover bg-gray-200">
+                                        <span class="font-bold uppercase" x-text="user.full_name || 'Belum di-set'"></span>
+                                    </td>
+                                    <td class="p-4 border-r border-black text-xs text-gray-500" x-text="user.id"></td>
+                                    <td class="p-4 border-r border-black">
+                                        <span x-show="user.role === 'admin'" class="bg-[#ccff00] text-black px-2 py-1 font-bold uppercase border border-black text-xs">Admin</span>
+                                        <span x-show="user.role === 'author'" class="bg-gray-200 text-gray-600 px-2 py-1 font-bold uppercase border border-black text-xs">Author</span>
+                                    </td>
+                                    <td class="p-4">
+                                        <button x-show="user.role === 'author'" @click="updateUserRole(user.id, 'admin')" class="bg-black text-white px-3 py-1 font-bold text-xs uppercase hover:bg-[#ccff00] hover:text-black border border-black transition-colors">Jadikan Admin</button>
+                                        <button x-show="user.role === 'admin' && user.id !== session.user.id" @click="updateUserRole(user.id, 'author')" class="bg-white text-black px-3 py-1 font-bold text-xs uppercase hover:bg-gray-200 border border-black transition-colors">Turunkan ke Author</button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: GLOBAL SETTINGS -->
+            <div x-show="currentView === 'settings'" x-cloak>
+                <div class="flex justify-between items-center mb-8 border-b-4 border-black pb-4">
+                    <h2 class="text-4xl font-header font-black uppercase">Global Settings</h2>
+                </div>
+                
+                <form @submit.prevent="saveSettings" class="bg-white p-6 md:p-8 brutal-border brutal-shadow flex flex-col gap-6 max-w-3xl">
+                    <h3 class="font-header text-2xl uppercase border-b-2 border-black pb-2 mb-4">Informasi Website & Footer</h3>
+                    
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-2">Headline About/Footer</label>
+                        <textarea x-model="settingsForm.about_headline" rows="2" class="w-full border-2 border-black p-3 font-header text-xl uppercase focus:outline-none focus:border-[#ccff00] ring-black"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold uppercase mb-2">Deskripsi Website</label>
+                        <textarea x-model="settingsForm.about_description" rows="4" class="w-full border-2 border-black p-3 font-mono text-sm focus:outline-none focus:border-[#ccff00] ring-black"></textarea>
+                    </div>
+
+                    <h3 class="font-header text-2xl uppercase border-b-2 border-black pb-2 mt-8 mb-4">Social Media Links</h3>
+                    
+                    <div class="flex items-center gap-4">
+                        <label class="w-24 text-xs font-bold uppercase">Instagram</label>
+                        <input type="text" x-model="settingsForm.social_instagram" class="flex-grow border-2 border-black p-2 font-mono text-sm focus:outline-none focus:border-[#ccff00]">
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <label class="w-24 text-xs font-bold uppercase">YouTube</label>
+                        <input type="text" x-model="settingsForm.social_youtube" class="flex-grow border-2 border-black p-2 font-mono text-sm focus:outline-none focus:border-[#ccff00]">
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <label class="w-24 text-xs font-bold uppercase">Twitter / X</label>
+                        <input type="text" x-model="settingsForm.social_twitter" class="flex-grow border-2 border-black p-2 font-mono text-sm focus:outline-none focus:border-[#ccff00]">
+                    </div>
+                    
+                    <div class="border-t-2 border-black pt-6 flex justify-end mt-4">
+                        <button type="submit" class="bg-black text-[#ccff00] border-2 border-black px-8 py-3 font-bold uppercase hover:bg-[#ccff00] hover:text-black brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSavingSettings">
+                            <span x-text="isSavingSettings ? 'Menyimpan...' : 'Simpan Settings'"></span>
+                        </button>
+                    </div>
                 </form>
             </div>
 
@@ -217,10 +427,28 @@
                 userProfile: null,
                 userRole: 'author', // 'author' or 'admin'
                 
-                currentView: 'posts', // 'posts', 'editor', 'users', 'settings'
+                currentView: 'posts', // 'posts', 'editor', 'users', 'settings', 'profile'
+                postFilter: 'all',
                 
                 posts: [],
                 
+                showOnboarding: false,
+                isSavingProfile: false,
+                profileForm: {
+                    full_name: '',
+                    avatar_url: ''
+                },
+                
+                allUsers: [],
+                isSavingSettings: false,
+                settingsForm: {
+                    about_headline: '',
+                    about_description: '',
+                    social_instagram: '',
+                    social_youtube: '',
+                    social_twitter: ''
+                },
+
                 editingPostId: null,
                 form: {
                     title: '',
@@ -275,11 +503,18 @@
                     if (data) {
                         this.userProfile = data;
                         this.userRole = data.role;
+                        this.profileForm.full_name = data.full_name || '';
+                        this.profileForm.avatar_url = data.avatar_url || '';
+                        
+                        // Tampilkan modal onboarding jika data kosong
+                        if (!data.full_name && !data.avatar_url) {
+                            this.showOnboarding = true;
+                        }
+                        
                         this.fetchPosts(); // Fetch posts after auth
                     } else if (error) {
                         console.error('Error fetching profile', error);
                         // Profile might not exist yet if trigger failed or delay. 
-                        // In production, the SQL trigger creates this automatically.
                     }
                 },
 
@@ -320,47 +555,137 @@
                     }
                 },
 
+                openProfile() {
+                    this.currentView = 'profile';
+                },
+                
+                async handleProfileUpload(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    const options = { maxSizeMB: 0.2, maxWidthOrHeight: 400, useWebWorker: true, fileType: 'image/webp' };
+                    try {
+                        const compressedFile = await imageCompression(file, options);
+                        const fileName = `avatar_${this.session.user.id}_${Date.now()}.webp`;
+                        
+                        const { data, error } = await supabaseClient.storage.from('images').upload(fileName, compressedFile);
+                        if (error) throw error;
+
+                        const { data: urlData } = supabaseClient.storage.from('images').getPublicUrl(data.path);
+                        this.profileForm.avatar_url = urlData.publicUrl;
+                    } catch (error) {
+                        console.error(error);
+                        alert("Error uploading avatar");
+                    }
+                },
+                
+                async saveProfile() {
+                    this.isSavingProfile = true;
+                    try {
+                        const { error } = await supabaseClient.from('users').update({
+                            full_name: this.profileForm.full_name,
+                            avatar_url: this.profileForm.avatar_url
+                        }).eq('id', this.session.user.id);
+                        
+                        if (error) throw error;
+                        
+                        this.userProfile.full_name = this.profileForm.full_name;
+                        this.userProfile.avatar_url = this.profileForm.avatar_url;
+                        this.showOnboarding = false;
+                        alert("Profil berhasil diupdate!");
+                    } catch (error) {
+                        console.error(error);
+                        alert("Error saving profile: " + error.message);
+                    } finally {
+                        this.isSavingProfile = false;
+                    }
+                },
+
                 async handleCoverUpload(event) {
                     const file = event.target.files[0];
                     if (!file) return;
 
-                    // Compress Image to WebP
-                    const options = {
-                        maxSizeMB: 0.5,
-                        maxWidthOrHeight: 1200,
-                        useWebWorker: true,
-                        fileType: 'image/webp'
-                    };
-
+                    const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1200, useWebWorker: true, fileType: 'image/webp' };
                     try {
                         const compressedFile = await imageCompression(file, options);
                         const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.webp`;
                         
-                        // Upload to Supabase Storage
-                        const { data, error } = await supabaseClient.storage
-                            .from('images')
-                            .upload(fileName, compressedFile);
-
+                        const { data, error } = await supabaseClient.storage.from('images').upload(fileName, compressedFile);
                         if (error) throw error;
 
-                        // Get public URL
                         const { data: urlData } = supabaseClient.storage.from('images').getPublicUrl(data.path);
                         this.form.cover_image = urlData.publicUrl;
-                        
                     } catch (error) {
                         console.error(error);
                         alert("Error uploading image");
                     }
                 },
+                
+                async fetchAllUsers() {
+                    if (this.userRole !== 'admin') return;
+                    const { data, error } = await supabaseClient.from('users').select('*').order('created_at', { ascending: false });
+                    if (data) this.allUsers = data;
+                },
+                
+                async updateUserRole(userId, newRole) {
+                    if (confirm(`Yakin merubah role pengguna ini menjadi ${newRole}?`)) {
+                        const { error } = await supabaseClient.from('users').update({ role: newRole }).eq('id', userId);
+                        if (error) alert("Error updating role: " + error.message);
+                        else this.fetchAllUsers();
+                    }
+                },
+                
+                async fetchSettings() {
+                    const { data, error } = await supabaseClient.from('settings').select('*');
+                    if (data) {
+                        const settingsMap = {};
+                        data.forEach(item => { settingsMap[item.key] = item.value; });
+                        this.settingsForm = {
+                            about_headline: settingsMap.about_headline || '',
+                            about_description: settingsMap.about_description || '',
+                            social_instagram: settingsMap.social_instagram || '',
+                            social_youtube: settingsMap.social_youtube || '',
+                            social_twitter: settingsMap.social_twitter || ''
+                        };
+                    }
+                },
+                
+                async saveSettings() {
+                    this.isSavingSettings = true;
+                    try {
+                        const settingsData = [
+                            { key: 'about_headline', value: this.settingsForm.about_headline },
+                            { key: 'about_description', value: this.settingsForm.about_description },
+                            { key: 'social_instagram', value: this.settingsForm.social_instagram },
+                            { key: 'social_youtube', value: this.settingsForm.social_youtube },
+                            { key: 'social_twitter', value: this.settingsForm.social_twitter }
+                        ];
+                        
+                        // Upsert settings
+                        const { error } = await supabaseClient.from('settings').upsert(settingsData, { onConflict: 'key' });
+                        if (error) throw error;
+                        
+                        alert("Global Settings Berhasil Disimpan!");
+                    } catch (error) {
+                        console.error(error);
+                        alert("Error saving settings: " + error.message);
+                    } finally {
+                        this.isSavingSettings = false;
+                    }
+                },
 
-                async savePost() {
+                parsedBody() {
+                    return marked.parse(this.form.body || 'Mulai mengetik *isi artikel*...');
+                },
+
+                async savePost(statusToSave) {
                     this.isSaving = true;
                     try {
                         const postData = {
                             title: this.form.title,
                             slug: this.form.slug,
                             category: this.form.category,
-                            status: this.form.status,
+                            status: statusToSave || 'draft',
                             cover_image: this.form.cover_image,
                             excerpt: this.form.excerpt,
                             body: this.form.body,
