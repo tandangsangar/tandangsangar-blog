@@ -1,0 +1,19 @@
+---
+pagination:
+  data: posts
+  size: 1
+  alias: p
+  addAllPagesToCollections: true
+permalink: "{{ p.url }}"
+layout: layouts/post.njk
+tags:
+  - posts
+eleventyComputed:
+  title: "{{ p.data.title }}"
+  category: "{{ p.data.category }}"
+  author: "{{ p.data.author }}"
+  image: "{{ p.data.image }}"
+  excerpt: "{{ p.data.excerpt }}"
+  date: "{{ p.date }}"
+---
+{{ p.content | safe }}

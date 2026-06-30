@@ -4,75 +4,27 @@ title: About Us
 ---
 
 <div class="container mx-auto px-4 py-12 md:py-24">
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-4xl mx-auto flex flex-col items-center text-center">
         
-        <h1 class="text-6xl md:text-9xl font-header uppercase leading-none mb-12 border-b-8 border-black pb-4">
-            {{ about.title_top }} <br/>
-            <span class="text-[#ccff00] bg-black px-4 inline-block transform -rotate-2 border-2 border-[#ccff00]">
-                {{ about.title_bottom }}
-            </span>
+        <h1 class="text-7xl md:text-[8rem] font-header font-black uppercase text-[#ccff00] leading-none tracking-tighter brutal-shadow border-4 border-black px-6 py-4 bg-black mb-12 transform -rotate-1">
+            {{ about.headline | replace('\n', '<br>') | safe }}
         </h1>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
-            
-            <div class="font-mono text-lg leading-relaxed flex flex-col justify-center prose max-w-none 
-                        [&>p]:mb-6 
-                        [&>p:first-child]:font-bold 
-                        [&>p:first-child]:text-xl 
-                        [&>p:first-child]:border-l-4 
-                        [&>p:first-child]:border-[#ccff00] 
-                        [&>p:first-child]:pl-4 
-                        [&>p:first-child]:uppercase">
-                {{ about.intro | safe }}
-            </div>
-
-            <div class="border-2 border-black p-8 bg-[#ccff00] brutal-shadow flex flex-col justify-center transform rotate-1 hover:rotate-0 transition-transform duration-300">
-                <div class="flex items-center gap-2 mb-4 border-b-2 border-black pb-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="black"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    <h2 class="font-header text-4xl uppercase">{{ about.manifesto_title }}</h2>
-                </div>
-                
-                <ul class="list-none font-mono space-y-3 font-bold">
-                    {% for item in about.manifesto_list %}
-                    <li class="flex items-start gap-3">
-                        <span class="bg-black text-white px-2 text-sm mt-1 shrink-0">{{ item.num }}</span> 
-                        <span class="uppercase">{{ item.text }}</span>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+        <div class="font-mono text-xl md:text-2xl leading-relaxed max-w-2xl mb-16 uppercase font-bold text-black bg-[#f0f0f0] p-8 border-4 border-black brutal-shadow">
+            {{ about.description | replace('\n', '<br/><br/>') | safe }}
         </div>
 
-        <div class="border-t-4 border-black pt-12">
-             <h2 class="font-header text-5xl uppercase mb-8 flex items-center gap-4">
-                {{ about.team_title }} <span class="text-sm font-mono bg-black text-white px-2 py-1 align-middle">CORE MEMBERS</span>
+        <div class="w-full border-t-4 border-black pt-12 flex flex-col items-center">
+             <h2 class="font-header text-4xl uppercase mb-8">
+                CONNECT
              </h2>
              
-             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                 
-                 {% for member in about.team %}
-                 <div class="border-2 border-black p-6 hover:bg-black hover:text-[#ccff00] transition-colors group brutal-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none bg-white flex flex-col h-full">
-                     
-                     <div class="aspect-square w-full border-2 border-black mb-6 overflow-hidden bg-gray-200">
-                        <img src="{{ member.photo or 'https://placehold.co/400x400/1a1a1a/ccff00?text=NO+IMG' }}" 
-                             alt="{{ member.name }}" 
-                             class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300">
-                     </div>
-
-                     <h3 class="font-header text-3xl uppercase mb-2 group-hover:text-white">{{ member.name }}</h3>
-                     
-                     <div>
-                        <div class="font-mono text-xs font-bold bg-[#ccff00] text-black inline-block px-2 mb-4 border border-black group-hover:border-white">
-                            {{ member.role }}
-                        </div>
-                     </div>
-                     
-                     <p class="font-mono text-sm group-hover:text-gray-300 mt-auto">
-                        {{ member.desc }}
-                     </p>
-                 </div>
+             <div class="flex flex-wrap justify-center gap-4 w-full">
+                 {% for link in about.social_links %}
+                 <a href="{{ link.url }}" class="group font-header text-2xl uppercase border-4 border-black bg-white px-8 py-4 brutal-shadow hover:bg-black hover:text-[#ccff00] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all text-black w-full md:w-auto">
+                     {{ link.platform }} <span class="inline-block transition-transform group-hover:translate-x-2">&rarr;</span>
+                 </a>
                  {% endfor %}
-
              </div>
         </div>
 

@@ -1,101 +1,420 @@
 <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tandang Sangar Admin</title>
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  </head>
-  <body>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TS - Redaksi Area</title>
+    
+    <!-- Tailwind CSS (Using CDN for Admin Area to ensure all utilities are present regardless of 11ty build) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Alpine.js Core -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+    <!-- Browser Image Compression -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        body { font-family: 'Space Mono', monospace; }
+        h1, h2, h3, h4, .font-header { font-family: 'Oswald', sans-serif; }
+        .brutal-shadow { box-shadow: 6px 6px 0px 0px rgba(0,0,0,1); }
+        .brutal-border { border: 3px solid black; }
+        
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-[#f0f0f0] text-black min-h-screen" x-data="adminApp()">
+
+    <!-- LOGIN SCREEN -->
+    <div x-show="!session" x-cloak class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white p-8 md:p-12 brutal-border brutal-shadow max-w-md w-full text-center">
+            <h1 class="text-4xl font-header font-black uppercase mb-2">Redaksi Login</h1>
+            <p class="text-sm mb-8">Authorised personnel only.</p>
+            
+            <button @click="signInWithGoogle" class="w-full bg-[#ccff00] text-black brutal-border px-6 py-4 font-bold uppercase hover:bg-black hover:text-[#ccff00] transition-colors flex items-center justify-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/></svg>
+                LOGIN WITH GOOGLE
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div x-show="session" x-cloak class="flex flex-col md:flex-row min-h-screen">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-full md:w-64 bg-black text-white brutal-border border-r-0 md:border-b-0 md:min-h-screen flex flex-col z-20 sticky top-0">
+            <div class="p-6 border-b-2 border-white">
+                <h1 class="text-3xl font-header font-black text-[#ccff00] uppercase">Admin Area</h1>
+            </div>
+            
+            <nav class="flex-grow flex flex-col p-4 gap-2">
+                <button @click="currentView = 'posts'" :class="currentView === 'posts' ? 'bg-[#ccff00] text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
+                    Semua Artikel
+                </button>
+                <button @click="currentView = 'editor'; editingPostId = null; resetForm()" :class="currentView === 'editor' && !editingPostId ? 'bg-[#ccff00] text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
+                    + Artikel Baru
+                </button>
+                
+                <!-- Admin Only Views -->
+                <template x-if="userRole === 'admin'">
+                    <div class="mt-8 pt-4 border-t-2 border-gray-700 flex flex-col gap-2">
+                        <span class="text-xs text-gray-500 uppercase px-4 mb-1">Admin Controls</span>
+                        <button @click="currentView = 'users'" :class="currentView === 'users' ? 'bg-white text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
+                            Manage Authors
+                        </button>
+                        <button @click="currentView = 'settings'" :class="currentView === 'settings' ? 'bg-white text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
+                            Global Settings
+                        </button>
+                    </div>
+                </template>
+            </nav>
+            
+            <!-- User Profile Snippet in Sidebar -->
+            <div class="p-4 border-t-2 border-white bg-gray-900 flex items-center justify-between">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <img :src="userProfile?.avatar_url || 'https://via.placeholder.com/40'" class="w-10 h-10 rounded-full border-2 border-[#ccff00] object-cover bg-black">
+                    <div class="truncate">
+                        <p class="text-sm font-bold uppercase truncate" x-text="userProfile?.full_name || 'Loading...'"></p>
+                        <p class="text-[10px] text-[#ccff00] uppercase" x-text="userRole"></p>
+                    </div>
+                </div>
+                <button @click="signOut" class="p-2 hover:text-red-500 transition-colors" title="Logout">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-grow p-4 md:p-8 overflow-y-auto">
+            
+            <!-- VIEW: POSTS -->
+            <div x-show="currentView === 'posts'">
+                <div class="flex justify-between items-center mb-8 border-b-4 border-black pb-4">
+                    <h2 class="text-4xl font-header font-black uppercase">Semua Artikel</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <template x-for="post in posts" :key="post.id">
+                        <div class="bg-white brutal-border brutal-shadow flex flex-col group relative">
+                            <!-- Status Badge -->
+                            <div class="absolute top-2 left-2 z-10">
+                                <span x-show="post.status === 'published'" class="bg-[#ccff00] border-2 border-black px-2 py-1 text-xs font-bold uppercase">Published</span>
+                                <span x-show="post.status === 'draft'" class="bg-gray-300 border-2 border-black px-2 py-1 text-xs font-bold uppercase text-gray-600">Draft</span>
+                            </div>
+                            
+                            <div class="aspect-video border-b-2 border-black overflow-hidden bg-gray-100">
+                                <img :src="post.cover_image" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-4 flex-grow flex flex-col">
+                                <span class="text-xs uppercase border border-black px-1 inline-block w-max mb-2" x-text="post.category"></span>
+                                <h3 class="font-header text-2xl uppercase leading-tight mb-2" x-text="post.title"></h3>
+                                <p class="text-xs text-gray-500 mb-4 flex-grow">By <span x-text="post.users?.full_name"></span></p>
+                                
+                                <div class="flex gap-2 border-t-2 border-black pt-4 mt-auto">
+                                    <button @click="editPost(post)" class="flex-1 bg-black text-white py-2 font-bold uppercase hover:bg-[#ccff00] hover:text-black brutal-border transition-colors text-sm">Edit</button>
+                                    <button @click="deletePost(post.id)" class="bg-red-500 text-white px-4 py-2 font-bold uppercase hover:bg-black brutal-border transition-colors text-sm">X</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <div x-show="posts.length === 0" class="text-center py-12 text-gray-500 border-2 border-dashed border-gray-400">
+                    Belum ada artikel. Mulai menulis.
+                </div>
+            </div>
+            
+            <!-- VIEW: EDITOR -->
+            <div x-show="currentView === 'editor'" x-cloak>
+                <div class="flex justify-between items-center mb-8 border-b-4 border-black pb-4">
+                    <h2 class="text-4xl font-header font-black uppercase" x-text="editingPostId ? 'Edit Artikel' : 'Artikel Baru'"></h2>
+                    <button @click="currentView = 'posts'" class="text-sm underline font-bold uppercase hover:text-[#ccff00]">Batal</button>
+                </div>
+                
+                <form @submit.prevent="savePost" class="bg-white p-6 md:p-8 brutal-border brutal-shadow flex flex-col gap-6 max-w-4xl">
+                    
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex-1 space-y-6">
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-2">Title</label>
+                                <input type="text" x-model="form.title" @input="generateSlug" required class="w-full border-2 border-black p-3 font-header text-2xl uppercase focus:outline-none focus:border-[#ccff00] focus:ring-2 ring-black">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-2">Slug (URL)</label>
+                                <input type="text" x-model="form.slug" required class="w-full border-2 border-black p-2 bg-gray-100 focus:outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+                        
+                        <div class="md:w-1/3 space-y-6 border-t-2 md:border-t-0 md:border-l-2 border-black md:pl-6 pt-6 md:pt-0">
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-2">Category</label>
+                                <select x-model="form.category" class="w-full border-2 border-black p-2 focus:outline-none">
+                                    <option value="MUSIC">MUSIC</option>
+                                    <option value="FILM">FILM</option>
+                                    <option value="VISUAL">VISUAL</option>
+                                    <option value="EVENTS">EVENTS</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-2">Status</label>
+                                <select x-model="form.status" class="w-full border-2 border-black p-2 focus:outline-none">
+                                    <option value="draft">DRAFT</option>
+                                    <option value="published">PUBLISHED</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t-2 border-black pt-6">
+                        <label class="block text-xs font-bold uppercase mb-2">Cover Image</label>
+                        <input type="file" @change="handleCoverUpload" accept="image/*" class="w-full border-2 border-black p-2">
+                        <div x-show="form.cover_image" class="mt-4 aspect-video w-full max-w-md border-2 border-black overflow-hidden relative">
+                            <img :src="form.cover_image" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    
+                    <div class="border-t-2 border-black pt-6">
+                        <label class="block text-xs font-bold uppercase mb-2">Excerpt (Intro)</label>
+                        <textarea x-model="form.excerpt" rows="3" class="w-full border-2 border-black p-3 focus:outline-none"></textarea>
+                    </div>
+
+                    <div class="border-t-2 border-black pt-6">
+                        <label class="block text-xs font-bold uppercase mb-2">Body (Markdown/HTML)</label>
+                        <!-- Basic textarea for now, can be upgraded to EasyMDE later -->
+                        <textarea x-model="form.body" rows="15" class="w-full border-2 border-black p-4 font-mono text-sm focus:outline-none" placeholder="Use Markdown or HTML..."></textarea>
+                    </div>
+
+                    <div class="border-t-2 border-black pt-6 flex justify-end">
+                        <button type="submit" class="bg-[#ccff00] text-black border-2 border-black px-8 py-3 font-bold uppercase hover:bg-black hover:text-[#ccff00] brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSaving">
+                            <span x-text="isSaving ? 'MENYIMPAN...' : 'SIMPAN ARTIKEL'"></span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
     <script>
-      // 1. Ambil CSS Website
-      CMS.registerPreviewStyle("/css/styles.css");
+        // Supabase Initialization
+        // We will fetch these from 11ty environment variables or hardcode for client-side if public
+        // The user should inject these variables during build or via an endpoint. 
+        // For security, Anon Key is safe to expose in client code.
+        const SUPABASE_URL = 'https://caxrazcyyqoxqppkbeqe.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNheHJhemN5eXFveHFwcGtiZXFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjcwNzMsImV4cCI6MjA5ODQwMzA3M30.M3dfUvi8UCSCBFBKokj1y56F2_oy-cEkJRGYGXwT7oU'; 
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // 2. Bikin Layout Preview (Split Layout Style)
-      var PostPreview = createClass({
-        render: function () {
-          var entry = this.props.entry;
-          var image = entry.getIn(["data", "image"]);
-          var title = entry.getIn(["data", "title"]);
-          var category = entry.getIn(["data", "category"]);
-          var author = entry.getIn(["data", "author"]);
-          var body = this.props.widgetFor("body");
-
-          return h(
-            "div",
-            {
-              className:
-                "min-h-screen bg-white font-mono border-b-2 border-black",
-            },
-            h(
-              "div",
-              { className: "flex flex-col md:flex-row" },
-              // KIRI
-              h(
-                "aside",
-                {
-                  className:
-                    "w-full md:w-4/12 border-b-2 md:border-b-0 md:border-r-2 border-black bg-[#f0f0f0] p-8 md:h-screen md:sticky md:top-0",
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('adminApp', () => ({
+                session: null,
+                userProfile: null,
+                userRole: 'author', // 'author' or 'admin'
+                
+                currentView: 'posts', // 'posts', 'editor', 'users', 'settings'
+                
+                posts: [],
+                
+                editingPostId: null,
+                form: {
+                    title: '',
+                    slug: '',
+                    category: 'MUSIC',
+                    status: 'draft',
+                    cover_image: '',
+                    excerpt: '',
+                    body: ''
                 },
-                h(
-                  "span",
-                  {
-                    className:
-                      "bg-black text-[#ccff00] px-2 py-1 text-xs font-bold uppercase mb-4 inline-block",
-                  },
-                  category,
-                ),
-                h(
-                  "h1",
-                  {
-                    className:
-                      "font-header text-5xl md:text-6xl uppercase leading-[0.85] tracking-tight break-words mb-8",
-                  },
-                  title,
-                ),
-                h(
-                  "div",
-                  { className: "mt-8 border-t-2 border-black pt-4" },
-                  h(
-                    "p",
-                    { className: "text-xs font-bold uppercase" },
-                    "By " + author,
-                  ),
-                ),
-              ),
-              // KANAN
-              h(
-                "div",
-                { className: "w-full md:w-8/12 bg-white" },
-                h(
-                  "div",
-                  {
-                    className:
-                      "w-full aspect-video border-b-2 border-black overflow-hidden relative",
-                  },
-                  h("img", {
-                    src: image,
-                    className:
-                      "w-full h-full object-cover grayscale contrast-125",
-                  }),
-                ),
-                h(
-                  "div",
-                  {
-                    className:
-                      "p-8 md:p-16 prose prose-lg max-w-none prose-headings:font-header prose-headings:uppercase prose-p:font-serif",
-                  },
-                  body,
-                ),
-              ),
-            ),
-          );
-        },
-      });
+                isSaving: false,
 
-      CMS.registerPreviewTemplate("posts", PostPreview);
+                async init() {
+                    // Check auth
+                    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                        this.session = session;
+                        if (session) this.fetchUserProfile();
+                    });
+
+                    supabaseClient.auth.onAuthStateChange((_event, session) => {
+                        this.session = session;
+                        if (session) {
+                            this.fetchUserProfile();
+                        } else {
+                            this.userProfile = null;
+                        }
+                    });
+                },
+
+                async signInWithGoogle() {
+                    const { error } = await supabaseClient.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: { redirectTo: window.location.origin + '/admin/' }
+                    });
+                    if (error) alert(error.message);
+                },
+
+                async signOut() {
+                    const { error } = await supabaseClient.auth.signOut();
+                    if (error) alert(error.message);
+                },
+
+                async fetchUserProfile() {
+                    if (!this.session) return;
+                    
+                    const { data, error } = await supabaseClient
+                        .from('users')
+                        .select('*')
+                        .eq('id', this.session.user.id)
+                        .single();
+                        
+                    if (data) {
+                        this.userProfile = data;
+                        this.userRole = data.role;
+                        this.fetchPosts(); // Fetch posts after auth
+                    } else if (error) {
+                        console.error('Error fetching profile', error);
+                        // Profile might not exist yet if trigger failed or delay. 
+                        // In production, the SQL trigger creates this automatically.
+                    }
+                },
+
+                async fetchPosts() {
+                    let query = supabaseClient.from('posts').select('*, users(full_name)').order('created_at', { ascending: false });
+                    
+                    // Note: RLS already restricts what the user can see, 
+                    // but we can also explicitly filter here if needed.
+                    // Because our RLS policy says "Posts are viewable by everyone" (so 11ty can build),
+                    // we need to filter the dashboard so authors only see their own.
+                    if (this.userRole !== 'admin') {
+                        query = query.eq('author_id', this.session.user.id);
+                    }
+
+                    const { data, error } = await query;
+                    if (data) this.posts = data;
+                    if (error) console.error(error);
+                },
+
+                resetForm() {
+                    this.form = {
+                        title: '',
+                        slug: '',
+                        category: 'MUSIC',
+                        status: 'draft',
+                        cover_image: '',
+                        excerpt: '',
+                        body: ''
+                    };
+                },
+
+                generateSlug() {
+                    if (!this.editingPostId) { // Only auto-generate if new post
+                        this.form.slug = this.form.title
+                            .toLowerCase()
+                            .replace(/[^\w ]+/g, '')
+                            .replace(/ +/g, '-');
+                    }
+                },
+
+                async handleCoverUpload(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    // Compress Image to WebP
+                    const options = {
+                        maxSizeMB: 0.5,
+                        maxWidthOrHeight: 1200,
+                        useWebWorker: true,
+                        fileType: 'image/webp'
+                    };
+
+                    try {
+                        const compressedFile = await imageCompression(file, options);
+                        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.webp`;
+                        
+                        // Upload to Supabase Storage
+                        const { data, error } = await supabaseClient.storage
+                            .from('images')
+                            .upload(fileName, compressedFile);
+
+                        if (error) throw error;
+
+                        // Get public URL
+                        const { data: urlData } = supabaseClient.storage.from('images').getPublicUrl(data.path);
+                        this.form.cover_image = urlData.publicUrl;
+                        
+                    } catch (error) {
+                        console.error(error);
+                        alert("Error uploading image");
+                    }
+                },
+
+                async savePost() {
+                    this.isSaving = true;
+                    try {
+                        const postData = {
+                            title: this.form.title,
+                            slug: this.form.slug,
+                            category: this.form.category,
+                            status: this.form.status,
+                            cover_image: this.form.cover_image,
+                            excerpt: this.form.excerpt,
+                            body: this.form.body,
+                            author_id: this.session.user.id
+                        };
+
+                        let res;
+                        if (this.editingPostId) {
+                            // Update
+                            res = await supabaseClient.from('posts').update(postData).eq('id', this.editingPostId);
+                        } else {
+                            // Insert
+                            res = await supabaseClient.from('posts').insert([postData]);
+                        }
+
+                        if (res.error) throw res.error;
+
+                        alert("Artikel Tersimpan!");
+                        this.fetchPosts();
+                        this.currentView = 'posts';
+                    } catch (error) {
+                        console.error(error);
+                        alert("Error saving: " + error.message);
+                    } finally {
+                        this.isSaving = false;
+                    }
+                },
+
+                editPost(post) {
+                    this.editingPostId = post.id;
+                    this.form = {
+                        title: post.title,
+                        slug: post.slug,
+                        category: post.category,
+                        status: post.status,
+                        cover_image: post.cover_image,
+                        excerpt: post.excerpt || '',
+                        body: post.body || ''
+                    };
+                    this.currentView = 'editor';
+                },
+
+                async deletePost(id) {
+                    if (confirm("Yakin mau hapus artikel ini?")) {
+                        const { error } = await supabaseClient.from('posts').delete().eq('id', id);
+                        if (error) {
+                            alert("Error deleting: " + error.message);
+                        } else {
+                            this.fetchPosts();
+                        }
+                    }
+                }
+            }));
+        });
     </script>
-  </body>
+</body>
 </html>

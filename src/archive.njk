@@ -1,0 +1,100 @@
+---
+layout: layouts/base.njk
+title: ARCHIVE
+pagination:
+  data: collections.posts
+  size: 10
+  alias: pagedPosts
+  reverse: true
+permalink: "/archive/{% if pagination.pageNumber > 0 %}{{ pagination.pageNumber + 1 }}/{% endif %}index.html"
+---
+
+<div class="bg-white mx-3 md:mx-6 min-h-screen border-2 border-black border-t-0 flex flex-col">
+
+    <!-- Header Section -->
+    <div class="px-4 pt-12 md:pt-16 pb-8 border-b-4 border-black">
+        <h1 class="text-6xl md:text-8xl font-header uppercase leading-none mb-6">
+            THE 
+            <span class="block md:inline-block text-[#ccff00] bg-black px-3 py-1 ml-0 md:ml-4 text-5xl md:text-6xl align-middle border-2 border-[#ccff00] transform -rotate-2 mt-2 md:mt-0 w-max">
+                ARCHIVE
+            </span>
+        </h1>
+        
+        <div class="flex flex-col md:flex-row justify-between items-end gap-4 mt-8">
+            <p class="font-mono text-lg max-w-xl font-bold uppercase">
+                Direktori lengkap seluruh tulisan kawula sangar
+            </p>
+            
+            <span class="font-mono text-base font-bold bg-black text-[#ccff00] px-4 py-2 border-2 border-[#ccff00] shadow-[6px_6px_0px_0px_#ccff00] transform rotate-1">
+                TOTAL: {{ collections.posts | length }} ARTIKEL
+            </span>
+        </div>
+    </div>
+
+    <!-- Archive List Section -->
+    <section class="w-full flex-grow flex flex-col bg-white border-b-4 border-black">
+        
+        {% for post in pagedPosts %}
+        <a href="{{ post.url }}" class="group block w-full border-b-2 border-black hover:bg-[#ccff00] hover:text-black transition-colors bg-white last:border-b-0">
+            <div class="flex flex-col md:flex-row md:items-center justify-between p-6 gap-4">
+                
+                <!-- Kolom Kiri: Tanggal & Kategori -->
+                <div class="flex items-center gap-4 w-full md:w-1/4 flex-shrink-0">
+                    <span class="font-mono text-sm border-2 border-black px-3 py-1 bg-black text-[#ccff00] group-hover:bg-white group-hover:text-black transition-colors whitespace-nowrap brutal-shadow-sm">
+                        {{ post.date | date("DD MMM YYYY") }}
+                    </span>
+                    <span class="font-mono text-sm font-bold uppercase underline decoration-4 underline-offset-4 truncate">
+                        {{ post.data.category }}
+                    </span>
+                </div>
+
+                <!-- Kolom Tengah: Judul -->
+                <div class="flex-grow">
+                    <h3 class="font-header text-3xl md:text-4xl uppercase group-hover:translate-x-4 transition-transform duration-300">
+                        {{ post.data.title }}
+                    </h3>
+                </div>
+
+                <!-- Kolom Kanan: Panah -->
+                <div class="hidden md:flex items-center justify-end w-16 flex-shrink-0">
+                    <span class="text-5xl group-hover:translate-x-2 transition-transform duration-300 font-black">&rarr;</span>
+                </div>
+
+            </div>
+        </a>
+        {% endfor %}
+
+    </section>
+
+    <!-- Pagination Controls -->
+    {% if pagination.pages.length > 1 %}
+    <div class="w-full bg-[#f0f0f0] p-6 flex items-center justify-between font-header uppercase text-xl">
+        
+        {% if pagination.href.previous %}
+            <a href="{{ pagination.href.previous }}" class="border-2 border-black bg-white px-6 py-3 brutal-shadow-sm hover:bg-black hover:text-white transition-colors">
+                &larr; PREV
+            </a>
+        {% else %}
+            <span class="border-2 border-gray-400 bg-gray-200 text-gray-500 px-6 py-3 opacity-50 cursor-not-allowed">
+                &larr; PREV
+            </span>
+        {% endif %}
+        
+        <span class="font-mono text-base font-bold text-black border-b-4 border-[#ccff00]">
+            PAGE {{ pagination.pageNumber + 1 }} OF {{ pagination.pages.length }}
+        </span>
+
+        {% if pagination.href.next %}
+            <a href="{{ pagination.href.next }}" class="border-2 border-black bg-[#ccff00] px-6 py-3 shadow-[4px_4px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+                NEXT &rarr;
+            </a>
+        {% else %}
+            <span class="border-2 border-gray-400 bg-gray-200 text-gray-500 px-6 py-3 opacity-50 cursor-not-allowed">
+                NEXT &rarr;
+            </span>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+</div>

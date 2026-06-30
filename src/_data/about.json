@@ -1,39 +1,18 @@
 {
-  "title_top": "ABOUT",
-  "title_bottom": "US",
-  "intro": "TANDANG SANGAR IS A DIGITAL COLLECTIVE DEDICATED TO THE RAW, THE UNPOLISHED, AND THE LOUD.\n\nFounded in 2026, we operate from the shadows of Surakarta. We believe that culture is not created in boardrooms, but in basements, street corners, and makeshift studios.",
-  "manifesto_title": "OUR MANIFESTO",
-  "manifesto_list": [
+  "headline": "TANDANG SANGAR",
+  "description": "Kolektif multimedia yang bergerak di persimpangan musik, sinema, dan huru-hara kultur pop arus pinggir. Hadir sebagai ruang alternatif dengan visual dan narasi yang (diusahakan) selalu sangar.\n\nEST. 2026 /// SURAKARTA",
+  "social_links": [
     {
-      "num": "01",
-      "text": "NO FILTERS. Reality is grainy."
+      "platform": "INSTAGRAM",
+      "url": "https://instagram.com/tandangsangar"
     },
     {
-      "num": "02",
-      "text": "NO INFLUENCERS. Real people only."
+      "platform": "YOUTUBE",
+      "url": "https://youtube.com/tandangsangar"
     },
     {
-      "num": "03",
-      "text": "NO COMPROMISE. Loud or nothing."
-    },
-    {
-      "num": "04",
-      "text": "ALWAYS LOCAL. Support your scene."
-    }
-  ],
-  "team_title": "THE TEAM",
-  "team": [
-    {
-      "name": "KDM",
-      "role": "GUBERNUR JABAR",
-      "desc": "KDM Bapak aing, aing bapak saha?",
-      "photo": "/uploads/gemini_generated_image_efyqd1efyqd1efyq-1-.png"
-    },
-    {
-      "name": "SARASVATI",
-      "role": "VISUAL DIRECTOR",
-      "desc": "Shoots exclusively on expired film. Menangkap momen sebelum hilang ditelan jaman.",
-      "photo": "https://placehold.co/400x400/1a1a1a/ccff00?text=SARAS"
+      "platform": "TWITTER / X",
+      "url": "https://x.com/tandangsangar"
     }
   ]
 }
