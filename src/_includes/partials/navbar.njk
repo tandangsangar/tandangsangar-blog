@@ -16,31 +16,35 @@
 
     <div id="mobile-menu" class="hidden md:flex flex-col md:flex-row flex-wrap justify-center items-center w-full md:w-auto gap-4 md:gap-8 font-mono font-bold text-sm md:text-base mt-4 md:mt-0">
         
+        {% if global.nav_toggles.HOME %}
         <a href="/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
             HOME
         </a>
+        {% endif %}
 
-        <a href="/category/music/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
-            MUSIC
+        {% for cat in global.categories %}
+        {% if global.nav_toggles[cat.name] %}
+        <a href="/category/{{ cat.name | slug }}/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
+            {{ cat.name }}
         </a>
-        <a href="/category/film/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
-            FILM
-        </a>
-        <a href="/category/visual/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
-            VISUAL
-        </a>
+        {% endif %}
+        {% endfor %}
         
         <a href="/archive/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
             ARCHIVE
         </a>
         
+        {% if global.nav_toggles.RADIO %}
         <a href="/radio/" class="flex items-center text-red-500 hover:bg-black hover:text-red-500 px-1 transition-colors uppercase">
             RADIO <span class="inline-block w-2.5 h-2.5 bg-red-500 rounded-full ml-2 animate-pulse"></span>
         </a>
+        {% endif %}
         
+        {% if global.nav_toggles.ABOUT %}
         <a href="/about/" class="hover:bg-black hover:text-[#ccff00] px-1 transition-colors uppercase">
             ABOUT
         </a>
+        {% endif %}
 
     </div>
 

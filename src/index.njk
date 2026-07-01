@@ -45,10 +45,9 @@ title: Home
                 md:absolute md:mt-0 md:top-1/2 md:-translate-y-1/2 md:left-auto md:right-[15%]">
         
         <div class="bg-[#f0f0f0] p-6 border-2 border-black shadow-[8px_8px_0px_0px_#000] rotate-2 hover:rotate-0 transition-transform duration-300">
-            <div class="flex items-center gap-2 mb-4 border-b-2 border-black pb-2">
-                <span class="text-2xl animate-pulse">⚡</span>
-                <h2 class="font-header text-2xl uppercase tracking-wide text-black">
-                    {{ global.manifesto_title }}
+            <div class="flex items-center mb-4 border-b-2 border-black pb-2">
+                <h2 class="font-header text-2xl uppercase tracking-wide text-black flex items-center">
+                    {{ global.manifesto_title }} <span class="inline-block w-2.5 h-2.5 bg-red-500 rounded-full ml-2 animate-pulse"></span>
                 </h2>
             </div>
             <p class="font-mono text-sm leading-relaxed mb-6 uppercase text-black">
@@ -142,6 +141,7 @@ title: Home
     </section>
 </div>
 
+{% if global.newsletter_active %}
 <div class="h-4 md:h-8"></div>
 
 <div class="bg-[#ccff00] mx-3 md:mx-6 border-2 border-black">
@@ -168,6 +168,7 @@ title: Home
     </div>
   </section>
 </div>
+{% endif %}
 
 <div class="h-24 md:h-12 w-full flex justify-center">
     <div class="h-full w-2 "></div>

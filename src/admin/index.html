@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TS - Redaksi Area</title>
-    
+    <title>TS - Admin</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
     <!-- Tailwind CSS (Using CDN for Admin Area to ensure all utilities are present regardless of 11ty build) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -72,12 +72,18 @@
     <div x-show="session" x-cloak class="flex flex-col md:flex-row min-h-screen">
         
         <!-- SIDEBAR -->
-        <aside class="w-full md:w-64 flex-shrink-0 bg-black text-white brutal-border border-r-0 md:border-b-0 md:min-h-screen flex flex-col z-20 sticky top-0">
-            <div class="p-6 border-b-2 border-white">
+        <aside class="w-full md:w-64 flex-shrink-0 bg-black text-white brutal-border border-r-0 md:border-b-0 md:h-screen md:sticky md:top-0 flex flex-col z-20">
+            <div class="p-6 border-b-2 border-white flex justify-between items-center">
                 <h1 class="text-3xl font-header font-black text-[#ccff00] uppercase">Admin Area</h1>
+                <button @click="sidebarOpen = !sidebarOpen" class="md:hidden border-2 border-[#ccff00] text-[#ccff00] p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
             </div>
             
-            <nav class="flex-grow flex flex-col p-4 gap-2">
+            <div :class="{'hidden': !sidebarOpen, 'flex': sidebarOpen}" class="md:flex flex-col flex-grow overflow-y-auto">
+                <nav class="flex-grow flex flex-col p-4 gap-2">
                 <button @click="currentView = 'posts'" :class="currentView === 'posts' ? 'bg-[#ccff00] text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
                     Semua Artikel
                 </button>
@@ -98,6 +104,9 @@
                         <button @click="currentView = 'settings'; fetchSettings()" :class="currentView === 'settings' ? 'bg-white text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
                             Global Settings
                         </button>
+                        <button @click="currentView = 'categories'; fetchSettings()" :class="currentView === 'categories' ? 'bg-white text-black' : 'hover:bg-gray-800'" class="text-left px-4 py-3 font-bold uppercase transition-colors brutal-border border-transparent">
+                            Manage Category
+                        </button>
                     </div>
                 </template>
             </nav>
@@ -115,6 +124,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                 </button>
             </div>
+            </div> <!-- End of sidebar hidden wrapper -->
         </aside>
 
         <!-- ONBOARDING MODAL -->
@@ -254,11 +264,10 @@
                         <div class="md:w-1/3 space-y-6 border-t-2 md:border-t-0 md:border-l-2 border-black md:pl-6 pt-6 md:pt-0">
                             <div>
                                 <label class="block text-xs font-bold uppercase mb-2">Category</label>
-                                <select x-model="form.category" class="w-full border-2 border-black p-2 focus:outline-none">
-                                    <option value="MUSIC">MUSIC</option>
-                                    <option value="FILM">FILM</option>
-                                    <option value="VISUAL">VISUAL</option>
-                                    <option value="EVENTS">EVENTS</option>
+                                <select x-model="form.category" class="w-full border-2 border-black p-2 focus:outline-none uppercase">
+                                    <template x-for="cat in settingsForm.global_categories">
+                                        <option :value="cat.name" x-text="cat.name"></option>
+                                    </template>
                                 </select>
                             </div>
                         </div>
@@ -474,6 +483,9 @@
                     <div class="bg-gray-100 p-4 border-2 border-black mt-2">
                         <label class="block text-xs font-bold uppercase mb-4 border-b border-black pb-2">Bagian Subscribe / Newsletter</label>
                         <div class="space-y-4">
+                            <label class="flex items-center gap-2 cursor-pointer font-bold uppercase text-sm border-2 border-black p-2 bg-white w-max hover:bg-[#ccff00] transition-colors">
+                                <input type="checkbox" x-model="settingsForm.global_newsletter_active" class="w-5 h-5 accent-black"> Tampilkan Form Subscribe
+                            </label>
                             <div>
                                 <label class="block text-xs font-bold uppercase mb-1">Judul (Gunakan &lt;br/&gt; untuk enter)</label>
                                 <input type="text" x-model="settingsForm.global_newsletter_home_title" class="w-full border-2 border-black p-2 font-header uppercase focus:outline-none focus:border-[#ccff00]">
@@ -505,24 +517,76 @@
                         <textarea x-model="settingsForm.about_description" rows="4" class="w-full border-2 border-black p-3 font-mono text-sm focus:outline-none focus:border-[#ccff00] ring-black"></textarea>
                     </div>
 
-                    <h3 class="font-header text-2xl uppercase border-b-2 border-black pb-2 mt-8 mb-4">Social Media Links</h3>
+                    <h3 class="font-header text-2xl uppercase border-b-2 border-black pb-2 mt-8 mb-4">Navbar Visibility (Toggles)</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-100 p-4 border-2 border-black">
+                        <label class="flex items-center gap-2 cursor-pointer font-bold uppercase text-sm">
+                            <input type="checkbox" x-model="settingsForm.global_nav_toggles.HOME" class="w-5 h-5 accent-black"> HOME
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer font-bold uppercase text-sm">
+                            <input type="checkbox" x-model="settingsForm.global_nav_toggles.RADIO" class="w-5 h-5 accent-black"> RADIO
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer font-bold uppercase text-sm">
+                            <input type="checkbox" x-model="settingsForm.global_nav_toggles.ABOUT" class="w-5 h-5 accent-black"> ABOUT
+                        </label>
+                        <template x-for="(cat, index) in settingsForm.global_categories" :key="index">
+                            <label class="flex items-center gap-2 cursor-pointer font-bold uppercase text-sm text-[#ccff00] bg-black px-2 py-1">
+                                <input type="checkbox" x-model="settingsForm.global_nav_toggles[cat.name]" class="w-5 h-5 accent-[#ccff00]"> <span x-text="cat.name"></span>
+                            </label>
+                        </template>
+                    </div>
+
+                    <div class="flex justify-between items-end border-b-2 border-black pb-2 mt-8 mb-4">
+                        <h3 class="font-header text-2xl uppercase">Social Media Links</h3>
+                        <button type="button" @click="settingsForm.global_social_links.push({platform: '', url: ''})" class="text-xs font-bold uppercase bg-black text-[#ccff00] px-3 py-1 hover:bg-[#ccff00] hover:text-black transition-colors">
+                            + Add Social
+                        </button>
+                    </div>
                     
-                    <div class="flex items-center gap-4">
-                        <label class="w-24 text-xs font-bold uppercase">Instagram</label>
-                        <input type="text" x-model="settingsForm.social_instagram" class="flex-grow border-2 border-black p-2 font-mono text-sm focus:outline-none focus:border-[#ccff00]">
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <label class="w-24 text-xs font-bold uppercase">YouTube</label>
-                        <input type="text" x-model="settingsForm.social_youtube" class="flex-grow border-2 border-black p-2 font-mono text-sm focus:outline-none focus:border-[#ccff00]">
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <label class="w-24 text-xs font-bold uppercase">Twitter / X</label>
-                        <input type="text" x-model="settingsForm.social_twitter" class="flex-grow border-2 border-black p-2 font-mono text-sm focus:outline-none focus:border-[#ccff00]">
-                    </div>
+                    <template x-for="(link, index) in settingsForm.global_social_links" :key="index">
+                        <div class="flex flex-col md:flex-row items-center gap-4 bg-gray-50 p-2 border border-gray-300 mb-2">
+                            <input type="text" x-model="link.platform" placeholder="Nama Sosmed (ex: INSTAGRAM)" class="w-full md:w-1/3 border-2 border-black p-2 font-mono text-sm focus:outline-none focus:border-[#ccff00]">
+                            <input type="text" x-model="link.url" placeholder="URL (ex: https://...)" class="w-full md:flex-grow border-2 border-black p-2 font-mono text-sm focus:outline-none focus:border-[#ccff00]">
+                            <button type="button" @click="settingsForm.global_social_links.splice(index, 1)" class="w-full md:w-auto text-red-500 font-bold uppercase hover:underline text-sm p-2">Remove</button>
+                        </div>
+                    </template>
                     
                     <div class="border-t-2 border-black pt-6 flex justify-end mt-4">
                         <button type="submit" class="bg-black text-[#ccff00] border-2 border-black px-8 py-3 font-bold uppercase hover:bg-[#ccff00] hover:text-black brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSavingSettings">
                             <span x-text="isSavingSettings ? 'Menyimpan...' : 'Simpan Settings'"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- VIEW: MANAGE CATEGORY -->
+            <div x-show="currentView === 'categories'" x-cloak>
+                <div class="flex justify-between items-center mb-8 border-b-4 border-black pb-4">
+                    <h2 class="text-4xl font-header font-black uppercase">Manage Category</h2>
+                </div>
+                
+                <form @submit.prevent="saveSettings" class="bg-white p-6 md:p-8 brutal-border brutal-shadow flex flex-col gap-6 max-w-3xl">
+                    <div class="flex justify-between items-end border-b-2 border-black pb-2 mb-4">
+                        <p class="text-sm">Kategori yang diatur di sini bakal muncul sebagai opsi pas bikin artikel baru, dan bakal dilist di bagian footer (kalo di set ON).</p>
+                        <button type="button" @click="settingsForm.global_categories.push({name: 'NEW_CATEGORY', showInFooter: true}); settingsForm.global_nav_toggles['NEW_CATEGORY'] = true;" class="text-xs font-bold uppercase bg-black text-[#ccff00] px-3 py-2 hover:bg-[#ccff00] hover:text-black transition-colors whitespace-nowrap ml-4">
+                            + Add Category
+                        </button>
+                    </div>
+                    
+                    <template x-for="(cat, index) in settingsForm.global_categories" :key="index">
+                        <div class="flex flex-col md:flex-row items-center gap-4 bg-gray-50 p-4 border-2 border-black mb-2 relative">
+                            <input type="text" x-model="cat.name" placeholder="NAMA KATEGORI" class="w-full md:flex-grow border-2 border-black p-2 font-header text-xl uppercase focus:outline-none focus:border-[#ccff00]">
+                            
+                            <label class="flex items-center gap-2 cursor-pointer font-bold uppercase text-sm border-2 border-black p-2 hover:bg-[#ccff00] transition-colors whitespace-nowrap">
+                                <input type="checkbox" x-model="cat.showInFooter" class="w-5 h-5 accent-black"> Tampil di Footer
+                            </label>
+                            
+                            <button type="button" @click="settingsForm.global_categories.splice(index, 1)" class="w-full md:w-auto bg-red-500 text-white font-bold uppercase hover:bg-red-700 transition-colors text-sm p-3 border-2 border-black">Hapus</button>
+                        </div>
+                    </template>
+                    
+                    <div class="border-t-2 border-black pt-6 flex justify-end mt-4">
+                        <button type="submit" class="bg-black text-[#ccff00] border-2 border-black px-8 py-3 font-bold uppercase hover:bg-[#ccff00] hover:text-black brutal-shadow transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" :disabled="isSavingSettings">
+                            <span x-text="isSavingSettings ? 'Menyimpan...' : 'Simpan Kategori'"></span>
                         </button>
                     </div>
                 </form>
@@ -547,6 +611,7 @@
                 session: null,
                 userProfile: null,
                 userRole: 'author', // 'author' or 'admin'
+                sidebarOpen: false,
                 
                 currentView: 'posts', // 'posts', 'editor', 'users', 'settings', 'profile'
                 postFilter: 'all',
@@ -565,9 +630,20 @@
                 settingsForm: {
                     about_headline: '',
                     about_description: '',
-                    social_instagram: '',
-                    social_youtube: '',
-                    social_twitter: '',
+                    global_categories: [
+                        { name: "MUSIC", showInFooter: true },
+                        { name: "FILM", showInFooter: true },
+                        { name: "VISUAL", showInFooter: true },
+                        { name: "EVENTS", showInFooter: true }
+                    ],
+                    global_nav_toggles: {
+                        HOME: true, RADIO: true, ABOUT: true, MUSIC: true, FILM: true, VISUAL: true, EVENTS: true
+                    },
+                    global_social_links: [
+                        { platform: "INSTAGRAM", url: "https://www.instagram.com/tandangsangar/" },
+                        { platform: "YOUTUBE", url: "https://www.youtube.com/@TandangSangar" },
+                        { platform: "TWITTER (X)", url: "https://x.com/TandangSangar" }
+                    ],
                     global_hero_text_solid: '',
                     global_hero_text_outline: '',
                     global_marquee_top: '',
@@ -575,7 +651,8 @@
                     global_manifesto_title: '',
                     global_manifesto_text: '',
                     global_manifesto_btn: '',
-                    global_manifesto_link: ''
+                    global_manifesto_link: '',
+                    global_newsletter_active: false
                 },
 
                 editingPostId: null,
@@ -612,6 +689,9 @@
                             this.initGoogleAuth();
                         }
                     }, 100);
+                    
+                    // Fetch settings on init so Categories are ready
+                    this.fetchSettings();
                 },
                 
                 initGoogleAuth() {
@@ -880,9 +960,9 @@
                         this.settingsForm = {
                             about_headline: settingsMap.about_headline || '',
                             about_description: settingsMap.about_description || '',
-                            social_instagram: settingsMap.social_instagram || '',
-                            social_youtube: settingsMap.social_youtube || '',
-                            social_twitter: settingsMap.social_twitter || '',
+                            global_categories: settingsMap.global_categories ? JSON.parse(settingsMap.global_categories) : this.settingsForm.global_categories,
+                            global_nav_toggles: settingsMap.global_nav_toggles ? JSON.parse(settingsMap.global_nav_toggles) : this.settingsForm.global_nav_toggles,
+                            global_social_links: settingsMap.global_social_links ? JSON.parse(settingsMap.global_social_links) : this.settingsForm.global_social_links,
                             global_hero_text_solid: settingsMap.global_hero_text_solid || '',
                             global_hero_text_outline: settingsMap.global_hero_text_outline || '',
                             global_marquee_top: settingsMap.global_marquee_top || '',
@@ -894,7 +974,8 @@
                             global_newsletter_home_title: settingsMap.global_newsletter_home_title || '',
                             global_newsletter_home_desc: settingsMap.global_newsletter_home_desc || '',
                             global_newsletter_home_placeholder: settingsMap.global_newsletter_home_placeholder || '',
-                            global_newsletter_home_btn: settingsMap.global_newsletter_home_btn || ''
+                            global_newsletter_home_btn: settingsMap.global_newsletter_home_btn || '',
+                            global_newsletter_active: settingsMap.global_newsletter_active !== undefined ? settingsMap.global_newsletter_active === 'true' : false
                         };
                     }
                 },
@@ -902,10 +983,11 @@
                 async saveSettings() {
                     this.isSavingSettings = true;
                     try {
-                        const settingsData = Object.keys(this.settingsForm).map(key => ({
-                            key: key,
-                            value: this.settingsForm[key]
-                        }));
+                        const settingsData = Object.keys(this.settingsForm).map(key => {
+                            let val = this.settingsForm[key];
+                            if (typeof val === 'object') val = JSON.stringify(val);
+                            return { key: key, value: val };
+                        });
                         
                         // Upsert settings
                         const { error } = await supabaseClient.from('settings').upsert(settingsData, { onConflict: 'key' });

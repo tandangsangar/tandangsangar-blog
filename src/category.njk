@@ -1,19 +1,19 @@
 ---
 pagination:
-  data: collections.categories
+  data: global.categories
   size: 1
   alias: cat
-permalink: /category/{{ cat | slug }}/
+permalink: /category/{{ cat.name | slug }}/
 layout: layouts/base.njk
 renderData:
-  title: "{{ cat }} ARCHIVE"
+  title: "{{ cat.name }} ARCHIVE"
 ---
 
 <div class="bg-white mx-3 md:mx-6 min-h-screen border-2 border-black border-t-0">
 
     <div class="px-4 pt-12 md:pt-16 pb-8">
         <h1 class="text-6xl md:text-8xl font-header uppercase leading-none mb-6">
-            {{ cat }} 
+            {{ cat.name }} 
             <span class="block md:inline-block text-[#ccff00] bg-black px-3 py-1 ml-0 md:ml-4 text-3xl md:text-4xl align-middle border-2 border-[#ccff00] transform -rotate-2 mt-2 md:mt-0 w-max">
                 COLLECTION
             </span>
@@ -22,9 +22,9 @@ renderData:
         <div class="h-2 bg-black w-full mb-8"></div>
 
         <div class="flex flex-col md:flex-row justify-between items-end mb-8 border-b-4 border-black pb-4 gap-4">
-            <h2 class="text-4xl md:text-5xl font-header uppercase">{{ cat }} ARCHIVE</h2>
+            <h2 class="text-4xl md:text-5xl font-header uppercase">{{ cat.name }} ARCHIVE</h2>
             
-            {% set categoryPosts = collections.posts | filterByCategory(cat) %}
+            {% set categoryPosts = collections.posts | filterByCategory(cat.name) %}
             <span class="font-mono text-sm font-bold bg-[#ccff00] px-3 py-1 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 {{ categoryPosts | length }} ITEMS
             </span>

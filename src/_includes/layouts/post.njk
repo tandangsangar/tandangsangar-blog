@@ -202,6 +202,7 @@ layout: layouts/base.njk
     </div>
 </section>
 
+{% if global.newsletter_active %}
 <div class="border-t-2 border-black bg-[#ccff00] overflow-hidden">
   <section class="w-full py-24 md:py-32 px-4 md:px-12 flex flex-col items-center justify-center relative overflow-hidden text-center">
     
@@ -227,6 +228,7 @@ layout: layouts/base.njk
     </div>
   </section>
 </div>
+{% endif %}
 
 <div class="h-24 w-full flex justify-center bg-white">
 </div>
