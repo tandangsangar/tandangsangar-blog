@@ -28,9 +28,27 @@ module.exports = function (eleventyConfig) {
     return [...categories];
   });
 
+  eleventyConfig.addCollection("allTags", function (collectionApi) {
+    let tagSet = new Set();
+    collectionApi.getAll().forEach((item) => {
+      let tags = item.data.p?.data?.custom_tags || item.data.custom_tags;
+      if (tags && Array.isArray(tags)) {
+        tags.forEach(t => tagSet.add(t));
+      }
+    });
+    return [...tagSet].sort();
+  });
+
   // 3. Filter biar bisa panggil post berdasarkan kategori
   eleventyConfig.addFilter("filterByCategory", function (posts, catName) {
     return posts.filter((p) => p.data.category === catName);
+  });
+
+  eleventyConfig.addFilter("filterByTag", function (posts, tagName) {
+    return posts.filter((item) => {
+      let tags = item.data.p?.data?.custom_tags || item.data.custom_tags;
+      return tags && Array.isArray(tags) && tags.includes(tagName);
+    });
   });
 
   // 4. Filter Markdown Parser + Custom Brutalist Caption

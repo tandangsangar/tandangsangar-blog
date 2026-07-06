@@ -87,10 +87,14 @@ layout: layouts/base.njk
                     <div>
                         <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">ARCHIVED BY</p>
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-black rounded-full border-2 border-white overflow-hidden shadow-sm">
-                                <div class="w-full h-full flex items-center justify-center text-[#ccff00] font-header text-lg pt-1">
-                                    {{ author | truncate(1, true, "") }}
-                                </div>
+                            <div class="w-10 h-10 bg-black rounded-full border-2 border-white overflow-hidden shadow-sm flex-shrink-0">
+                                {% if author_avatar %}
+                                    <img src="{{ author_avatar }}" alt="{{ author }}" class="w-full h-full object-cover">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center text-[#ccff00] font-header text-lg pt-1">
+                                        {{ author | truncate(1, true, "") }}
+                                    </div>
+                                {% endif %}
                             </div>
                             <span class="font-header text-xl uppercase">{{ author }}</span>
                         </div>
@@ -103,6 +107,20 @@ layout: layouts/base.njk
                                 {{ date | date("DD.MM.YYYY") }}
                             </p>
                         </div>
+
+                        {% set page_tags = p.data.custom_tags if p else custom_tags %}
+                        {% if page_tags and (page_tags | length) > 0 %}
+                        <div>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">TAGS</p>
+                            <div class="flex flex-wrap gap-1">
+                                {% for tag in page_tags %}
+                                <a href="/tag/{{ tag | slug }}/" class="font-mono text-[10px] font-bold uppercase px-2 py-1 bg-[#ccff00] text-black border border-black hover:bg-black hover:text-[#ccff00] transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+                                    #{{ tag }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -126,6 +144,18 @@ layout: layouts/base.njk
                 
                 </div>
             </div>
+
+            {% set page_tags = p.data.custom_tags if p else custom_tags %}
+            {% if page_tags and (page_tags | length) > 0 %}
+            <div class="border-t-2 border-black p-8 md:p-12 bg-white flex flex-wrap gap-2 items-center">
+                <span class="font-bold font-mono text-sm mr-2 uppercase">Tags:</span>
+                {% for tag in page_tags %}
+                <a href="/tag/{{ tag | slug }}/" class="font-mono text-xs font-bold uppercase px-3 py-1 bg-black text-[#ccff00] hover:bg-[#ccff00] hover:text-black border-2 border-black brutal-shadow-sm hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                    #{{ tag }}
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
 
             <div class="border-t-2 border-black p-8 md:p-12 bg-[#ccff00] flex flex-col md:flex-row items-center justify-between gap-6">
                 <h3 class="font-header text-3xl md:text-4xl uppercase mb-0 text-center md:text-left">BAGIKAN ARTIKEL</h3>

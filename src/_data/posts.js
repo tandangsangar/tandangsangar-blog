@@ -17,7 +17,7 @@ module.exports = async function() {
         // Fetch published posts
         const { data: posts, error } = await supabase
             .from('posts')
-            .select('*, users(full_name)')
+            .select('*, users(full_name, avatar_url)')
             .eq('status', 'published')
             .order('created_at', { ascending: false });
 
@@ -37,9 +37,11 @@ module.exports = async function() {
                     title: post.title,
                     category: post.category,
                     author: post.users?.full_name || 'Unknown',
+                    author_avatar: post.users?.avatar_url || '',
                     image: post.cover_image,
                     excerpt: post.excerpt,
-                    tags: ['posts'] // Need this for 11ty collections if they rely on tags
+                    tags: ['posts'].concat(post.tags ? post.tags.split(',').map(t => t.trim()).filter(t => t.length > 0) : []),
+                    custom_tags: post.tags ? post.tags.split(',').map(t => t.trim()).filter(t => t.length > 0) : []
                 },
                 content: post.body // Note: templates might need | safe filter if markdown is already rendered, but we need to render markdown to HTML if it's raw markdown.
             };
