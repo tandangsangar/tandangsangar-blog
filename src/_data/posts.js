@@ -36,8 +36,8 @@ module.exports = async function() {
                 data: {
                     title: post.title,
                     category: post.category,
-                    author: post.users?.full_name || 'Unknown',
-                    author_avatar: post.users?.avatar_url || '',
+                    author: (post.users && post.users.full_name) ? post.users.full_name : 'Unknown',
+                    author_avatar: (post.users && post.users.avatar_url) ? post.users.avatar_url : '',
                     image: post.cover_image,
                     excerpt: post.excerpt,
                     tags: ['posts'].concat(post.tags ? post.tags.split(',').map(t => t.trim()).filter(t => t.length > 0) : []),

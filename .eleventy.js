@@ -31,7 +31,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addCollection("allTags", function (collectionApi) {
     let tagSet = new Set();
     collectionApi.getAll().forEach((item) => {
-      let tags = item.data.p?.data?.custom_tags || item.data.custom_tags;
+      let tags = (item.data.p && item.data.p.data && item.data.p.data.custom_tags) || item.data.custom_tags;
       if (tags && Array.isArray(tags)) {
         tags.forEach(t => tagSet.add(t));
       }
@@ -46,7 +46,7 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("filterByTag", function (posts, tagName) {
     return posts.filter((item) => {
-      let tags = item.data.p?.data?.custom_tags || item.data.custom_tags;
+      let tags = (item.data.p && item.data.p.data && item.data.p.data.custom_tags) || item.data.custom_tags;
       return tags && Array.isArray(tags) && tags.includes(tagName);
     });
   });
